@@ -31,7 +31,7 @@ class Catalog extends Component {
 		else {
 			return (
 				<div>
-					{threads.map(thread => <Preview key={thread.id} {...thread}/>)}
+					{threads.map(thread => <Preview key={thread.thread_id} {...thread}/>)}
 				</div>
 			);
 		}

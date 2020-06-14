@@ -1,4 +1,6 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
+const HtmlWebPackPlugin = require("html-webpack-plugin"),
+  { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 
 const htmlPlugin = new HtmlWebPackPlugin({
   template: "./src/index.html",
@@ -18,8 +20,22 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader']
-      }
+      },    
+      {
+        test: /\.(jpe?g|png|gif)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 10 * 1024,
+          esModule: false,
+          outputPath: 'images'
+        }
+      },
+      {
+        test: /\.(jpg|png|gif|svg)$/,
+        loader: 'image-webpack-loader',
+        enforce: 'pre'
+      },
     ]
   },
-  plugins: [htmlPlugin]
+  plugins: [htmlPlugin, new CleanWebpackPlugin()]
 };

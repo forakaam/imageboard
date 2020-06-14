@@ -6,7 +6,7 @@ class Preview extends Component {
 		const {id, image, title, content} = this.props;
 		return (
 			<div>
-				<img src={'images' + id + '\\' + image}/>
+				<img src={'/images/' + id + '/' + image}/>
 			</div>
 		)
 	}

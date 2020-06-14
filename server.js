@@ -18,19 +18,9 @@ app.get('/api/threads', (req,res) => {
 		.then(data => {
 			res.json(data);
 		})
-		//.catch(err => res.status(500).send('Database Error'));
+		.catch(err => res.status(500).send('Database Error'));
 });
 
 app.listen(port, () => {
 	console.log(`Serving on port ${port}...`);
 });
-
-
-// select * from threads t join (select count(comments.id), thread_id from comments group by thread_id) n on thread_id = t.id
-// join comments c on c.thread_id = t.id where head = true;
-
-
-
-	// 	knex('comments')
-	// .join('threads', 'comments.thread_id', '=', 'threads.id',)
-	// .where('head', true).select('*')

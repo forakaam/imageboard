@@ -88,7 +88,6 @@ exports.seed = function(knex) {
           content: `>>8839551
           India would be cozy`,
           IP: '69.89.31.228',
-          image: '',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -103,7 +102,6 @@ exports.seed = function(knex) {
           >Positives: im fucked
           >Negatives: literally everything`,
           IP: '69.89.31.333',
-          image: '',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -125,7 +123,6 @@ exports.seed = function(knex) {
           content: `>>95936237
     Because people don't know much and in general are kind of dumb`,
           IP: '69.89.33.276',
-          image: '',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 3
@@ -136,7 +133,6 @@ exports.seed = function(knex) {
           content: `Cobain had a very impressive vocal range actually. His vocal range was right up there with the likes of Aretha Franklin, Kelly Clarkston, Bob Dylon and even Justin Bieber. He may have been the best all time of screaming pitch perfect tones.
           Check out this list of vocalists and their vocal range. Cobain was no joke: https://www.concerthotels.com/worlds-greatest-vocal-ranges`,
           IP: '69.89.31.626',
-          image: '',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 3
@@ -147,7 +143,6 @@ exports.seed = function(knex) {
           content: `    >>95936357
           Holy shit, didn't think Thom Yorke would be way up there. Says his highest note is on Just, so did they count his "Ow!" or something?`,
           IP: '69.89.31.226',
-          image: '',
           head: false,
           created_at: new Date(new Date().getTime() + (sec += 300000)),
           thread_id: 3

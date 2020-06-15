@@ -1,11 +1,11 @@
 
 exports.seed = function(knex) {
   // Deletes ALL existing entries
-  return knex('comments').del()
+  return knex('posts').del()
     .then(function () {
       // Inserts seed entries
       let sec = 0;
-      return knex('comments').insert([
+      return knex('posts').insert([
         {
           id: 1,  
           address: '25191103',

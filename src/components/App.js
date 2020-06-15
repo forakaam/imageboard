@@ -7,11 +7,13 @@ import '../styles/app.css'
 class App extends Component {
 	render() {
 		return (
-		<Switch>
-			<Route path="/" render={() => <Catalog/>} />
-			<Route path="/thread/:id" render={() => <Thread/>} />
-			// <Redirect from="/" to="/catalog" />
-		</Switch>
+		<div class="container">
+			<Switch class="container">
+				<Route path="/threads/:id" render={routeProps => <Thread {...routeProps}/>} />
+				<Route path="/" render={() => <Catalog/>} />		
+				// <Redirect from="/" to="/catalog" />
+			</Switch>
+		</div>
 		)
 	}
 }

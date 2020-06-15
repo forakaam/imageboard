@@ -18,8 +18,7 @@ class Catalog extends Component {
 				threads: data,
 				isLoaded: true
 			})
-		})
-		.catch(error => this.setState({error}));
+		}).catch(error => this.setState({error}));
 	}
 	render(){
 		const {isLoaded, threads, error} = this.state;

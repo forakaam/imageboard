@@ -20,13 +20,14 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader']
-      },    
+      },  
       {
         test: /\.(jpe?g|png|gif)$/,
         loader: 'url-loader',
         options: {
           limit: 10 * 1024,
           esModule: false,
+          name: '[name].[ext]',
           outputPath: 'images'
         }
       },
@@ -37,5 +38,5 @@ module.exports = {
       },
     ]
   },
-  plugins: [htmlPlugin, new CleanWebpackPlugin()]
+  plugins: [htmlPlugin] //, new CleanWebpackPlugin()
 };

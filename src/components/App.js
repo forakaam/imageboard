@@ -7,8 +7,8 @@ import '../styles/app.css'
 class App extends Component {
 	render() {
 		return (
-		<div class="container">
-			<Switch class="container">
+		<div className="container">
+			<Switch className="container">
 				<Route path="/threads/:id" render={routeProps => <Thread {...routeProps}/>} />
 				<Route path="/" render={() => <Catalog/>} />		
 				// <Redirect from="/" to="/catalog" />

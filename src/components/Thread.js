@@ -30,7 +30,7 @@ class Thread extends Component {
 		else {
 			return (
 				<div>
-					<h2>{posts[0]['title']}</h2>
+					{posts[0] && <h2>{posts[0]['title']}</h2>}
 					{posts.map(post => <Post key={post.id} {...post}/>)}
 				}
 				</div>

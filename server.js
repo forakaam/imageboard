@@ -22,7 +22,7 @@ app.get('/api/threads', (req, res) => {
 
 app.get('/api/threads/:id', (req, res) => {
 	console.log(req.params, req.params.id)
-	knex('threads').select('thread_id', 'image', 'title', 'content', 'created_at', 'archived', 'address')
+	knex('threads').select('posts.id','thread_id', 'image', 'title', 'content', 'created_at', 'archived', 'address')
 	.join('posts', 'posts.thread_id', '=', 'threads.id').where('threads.id', req.params.id)
 	.then(data => res.json(data))
 	.catch(err => res.status(500).send(err))

@@ -6,12 +6,12 @@ class Preview extends Component {
 	render() {
 		const {thread_id, image, images, title, content, replies, created_at} = this.props;
 		return (
-			<div class="preview">
+			<div className="preview">
 				<Link to={`/threads/${thread_id}`}>
-					<img src={require(`../images/${thread_id}/${image}`)}/>
+					<img src={`../../images/${thread_id}/${image}`}/>
 					<div>Replies: {replies}/ Images: {images}/ Created: {new Date(created_at).toLocaleString()}</div>
-					<h2 class="title">{title}</h2>
-					<div class="content">{content}</div>
+					<h2 className="title">{title}</h2>
+					<div className="content">{content}</div>
 				</Link>
 			</div>
 		)

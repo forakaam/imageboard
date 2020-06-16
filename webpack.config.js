@@ -7,6 +7,9 @@ const htmlPlugin = new HtmlWebPackPlugin({
   filename: "./index.html"
 });
 
+const cleanWebpackPlugin = new CleanWebpackPlugin({
+  cleanOnceBeforeBuildPatterns: ['**/*', '!images/**/**'],
+})
 module.exports = {
   module: {
     rules: [
@@ -38,5 +41,5 @@ module.exports = {
       },
     ]
   },
-  plugins: [htmlPlugin] //, new CleanWebpackPlugin()
+  plugins: [htmlPlugin, cleanWebpackPlugin] 
 };

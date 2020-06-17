@@ -8,7 +8,7 @@
 	padding: 5px;
 }
 
-img {
+.thumbnail-display{
 	max-height: 150px;
 	max-width: 150px;
 	border: 1px solid #ddd;
@@ -16,7 +16,7 @@ img {
   	padding: 1px;
 }
 
-img:hover {
+.thumbnail-display:hover {
   box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
 }
 .title {

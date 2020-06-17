@@ -8,7 +8,7 @@ class Preview extends Component {
 		return (
 			<div className="preview">
 				<Link to={`/threads/${thread_id}`}>
-					<img src={`../../images/${thread_id}/${image}`}/>
+					<img src={`../../images/${thread_id}/${image}`} className="thumbnail-display"/>
 				</Link>
 				<div>Replies: {replies}/ Images: {images}/ Created: {new Date(created_at).toLocaleString()}</div>
 				<h2 className="title">{title}</h2>

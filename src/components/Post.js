@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
+import Image from './Image';
+import Address from './Address';
 
 class Post extends Component {
 	constructor(props){
@@ -12,7 +14,9 @@ class Post extends Component {
 		let re = /(>>\d{8})/g;
 		let result = this.props.content.split(re).map(block => {
 			if (block.match(re)) {
-				return <a href={`#${this.props.address}`}>{block}</a> 
+				let address = /\d{8}/.exec(block)[0];
+				this.props.linkReply(address);
+				return <Address to={address} parent={this.props.address}/> 
 			}
 			else {
 				return block;
@@ -21,24 +25,16 @@ class Post extends Component {
 		this.setState({text: result});
 	}
 	render() {
-		const {image, archived, thread_id, content, created_at, address, filesize, dimensions} = this.props;
+		const {image, archived, thread_id, content, created_at, address, filesize, dimensions, replies} = this.props;
 		const {text} = this.state;
-		let showImage;
-		if (image) {
-			showImage = (
-				<div className="file">
-					<a id ={address}><a>{image}</a> ({filesize}, {dimensions.width}x{dimensions.height} ), search on google, {archived && <span>archived icon</span>}</a>
-					<img src={`../../images/${thread_id}/${image}`}/>
-				</div>
-			);
-		}
+		console.log("replies:", replies)
 		return (
 			<div>
-				{showImage}
-				<div className="content">
-					<div className="info">Anonymous {created_at} No.{address}</div>
-					<div>{text}</div>
-				</div>
+				<a id ={address}>			
+				<div className="header">Anonymous {created_at} No.{address} {replies && replies.map(reply => <Address to={reply}/>)}</div>
+				</a>
+				{image && <Image filename ={image} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}
+				<div>{text}</div>
 			</div>
 		)
 	}

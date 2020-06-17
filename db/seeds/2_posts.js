@@ -54,7 +54,7 @@ exports.seed = function(knex) {
         },
         {
           id: 5,
-          address: '8839519',
+          address: '88839519',
           content: `>Location: Western Gaul
           >People: Some Gaulish tribe
           >Status: Probably the son of a wealthy landowner or minor noble
@@ -70,7 +70,7 @@ exports.seed = function(knex) {
         },
         {
           id: 6,
-          address: '8839600',
+          address: '88839600',
           content: `>Sitting somewhere in India (no idea where because am Tamil Brahmin so no clue how far my IE bloodline is from reaching Tamil Nadu). 
           >Medical resident right now and am Brahmin by birth, so probably some village/city doctor and priest?
           >Positives: qt Indian waifu, probably get to live a nice long life treating the sick and the poor without having to worry about the bills, wholesome support from my community for doing what I love
@@ -84,8 +84,8 @@ exports.seed = function(knex) {
         },
         {
           id: 7,
-          address: '8839601',
-          content: `>>8839551
+          address: '88839601',
+          content: `>>88839600
           India would be cozy`,
           IP: '69.89.31.228',
           head: false,
@@ -94,7 +94,7 @@ exports.seed = function(knex) {
         },
         {
           id: 8,
-          address: '95936237',
+          address: '88839602',
           content: `    >Location: Northern Gaul
           >People: Belgae probabaly
           >Status: Whatever's just above a slave
@@ -119,7 +119,7 @@ exports.seed = function(knex) {
         },
         {
           id: 10,
-          address: '95936237',
+          address: '95936238',
           content: `>>95936237
     Because people don't know much and in general are kind of dumb`,
           IP: '69.89.33.276',
@@ -129,7 +129,7 @@ exports.seed = function(knex) {
         },
         {
           id: 11,
-          address: '95936237',
+          address: '95936239',
           content: `Cobain had a very impressive vocal range actually. His vocal range was right up there with the likes of Aretha Franklin, Kelly Clarkston, Bob Dylon and even Justin Bieber. He may have been the best all time of screaming pitch perfect tones.
           Check out this list of vocalists and their vocal range. Cobain was no joke: https://www.concerthotels.com/worlds-greatest-vocal-ranges`,
           IP: '69.89.31.626',
@@ -139,8 +139,8 @@ exports.seed = function(knex) {
         },
         {
           id: 12,
-          address: '95936237',
-          content: `    >>95936357
+          address: '95936240',
+          content: `    >>95936239
           Holy shit, didn't think Thom Yorke would be way up there. Says his highest note is on Just, so did they count his "Ow!" or something?`,
           IP: '69.89.31.226',
           head: false,

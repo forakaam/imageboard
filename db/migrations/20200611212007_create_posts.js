@@ -3,7 +3,8 @@ exports.up = function(knex) {
 		table.increments();
 		table.integer('address');
 		table.text('content');
-		table.string('IP')
+		table.string('IP');
+		table.string('name');
 		table.string('image');
 		table.boolean('head');
 		table.timestamp('created_at', {precision:  2}).defaultTo(knex.fn.now(2));

@@ -1,7 +1,7 @@
 exports.up = function(knex) {
 	return knex.schema.createTable('threads', (table) => {
 		table.increments();
-		table.string('title');
+		table.string('subject');
 		table.boolean('archived');
 	});
 };

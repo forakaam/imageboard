@@ -6,8 +6,7 @@ exports.seed = function(knex) {
       // Inserts seed entries
       let sec = 0;
       return knex('posts').insert([
-        {
-          id: 1,  
+        { 
           address: '25191103',
           content: 'Post unsettling images',
           IP: '69.89.31.226',
@@ -16,8 +15,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 1
         },
-        {
-          id: 2,  
+        { 
           address: '25191104',
           content: '>>25191103  Creepy!',
           IP: '69.89.31.225',
@@ -26,9 +24,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 1
         },
-        {
-          id: 3,
-          address: '25191105',
+        {          address: '25191105',
           content: '',
           IP: '69.89.31.226',
           image: '1591724924905.jpg',
@@ -36,9 +32,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 1
         },
-        {
-          id: 4,
-          address: '8839518',
+        {          address: '8839518',
           content: `By some miracle of the universe, you are transported to 500BC. Following your paternal line (maternal for femanons), where are you? Who are you? Your social status and livelihood are the Antique equivalents of your current social status and livelihood. How screwed are you?
           >Location:
           >People:
@@ -52,9 +46,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
         },
-        {
-          id: 5,
-          address: '88839519',
+        {          address: '88839519',
           content: `>Location: Western Gaul
           >People: Some Gaulish tribe
           >Status: Probably the son of a wealthy landowner or minor noble
@@ -68,9 +60,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
         },
-        {
-          id: 6,
-          address: '88839600',
+        {          address: '88839600',
           content: `>Sitting somewhere in India (no idea where because am Tamil Brahmin so no clue how far my IE bloodline is from reaching Tamil Nadu). 
           >Medical resident right now and am Brahmin by birth, so probably some village/city doctor and priest?
           >Positives: qt Indian waifu, probably get to live a nice long life treating the sick and the poor without having to worry about the bills, wholesome support from my community for doing what I love
@@ -82,9 +72,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
         },
-        {
-          id: 7,
-          address: '88839601',
+        {          address: '88839601',
           content: `>>88839600
           India would be cozy`,
           IP: '69.89.31.228',
@@ -92,9 +80,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
         },
-        {
-          id: 8,
-          address: '88839602',
+        {          address: '88839602',
           content: `    >Location: Northern Gaul
           >People: Belgae probabaly
           >Status: Whatever's just above a slave
@@ -106,9 +92,7 @@ exports.seed = function(knex) {
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
         },
-        {
-          id: 9,
-          address: '95936237',
+        {          address: '95936237',
           content: `>Possesses a range of four fucking octaves 
           Why do people say this? He also conveyed incredible emotion and had an amazing scream.`,
           IP: '69.89.31.226',
@@ -118,7 +102,6 @@ exports.seed = function(knex) {
           thread_id: 3
         },
         {
-          id: 10,
           address: '95936238',
           content: `>>95936237
     Because people don't know much and in general are kind of dumb`,
@@ -128,7 +111,6 @@ exports.seed = function(knex) {
           thread_id: 3
         },
         {
-          id: 11,
           address: '95936239',
           content: `Cobain had a very impressive vocal range actually. His vocal range was right up there with the likes of Aretha Franklin, Kelly Clarkston, Bob Dylon and even Justin Bieber. He may have been the best all time of screaming pitch perfect tones.
           Check out this list of vocalists and their vocal range. Cobain was no joke: https://www.concerthotels.com/worlds-greatest-vocal-ranges`,
@@ -138,7 +120,6 @@ exports.seed = function(knex) {
           thread_id: 3
         },
         {
-          id: 12,
           address: '95936240',
           content: `    >>95936239
           Holy shit, didn't think Thom Yorke would be way up there. Says his highest note is on Just, so did they count his "Ow!" or something?`,

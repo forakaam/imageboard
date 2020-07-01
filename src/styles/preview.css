@@ -9,8 +9,8 @@
 }
 
 .thumbnail-display{
-	max-height: 150px;
-	max-width: 150px;
+	height: 150px;
+	width: 150px;
 	border: 1px solid #ddd;
   	border-radius: 4px;
   	padding: 1px;

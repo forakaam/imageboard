@@ -30,7 +30,6 @@ class Form extends Component {
 		let form = new FormData()
 		form.append('image', this.image.current.files[0]);
 		form.append('content', content);
-		form.append('thread', thread);
 		form.append('subject', subject);
 		form.append('name', name);
 		this.setState({
@@ -46,19 +45,20 @@ class Form extends Component {
 		};
 		if (!this.props.parent || thread == "new") {
 			fetch(`/api/threads/new`, opts)
-			.then(res => res.json())
-			.then(data => {
-				if (res.status >= 300) throw new Error();
-				this.props.history.push(`/threads/${data}`);
+			.then(res => {
+				if (res.status >= 400) throw new Error();
+				res.json().then(data => {
+					this.props.history.push(`/threads/${data}`);
+				})
 			})
-			.catch(err => alert('Error: Submission failed'))
+			.catch(err => alert('Error: Submission failed ' + err))
 		}
 		else {
 			fetch(`/api/threads/${thread}/new`, opts).
 			then(res => {
-				if (res.status >= 300) throw new Error();
+				if (res.status >= 400) throw new Error();
 			})
-			.catch(err => alert('Error: Submission failed'))
+			.catch(err => alert('Error: Submission failed ' + err))
 		}
 	}
 	handleClick(e) {

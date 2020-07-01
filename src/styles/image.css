@@ -1,6 +1,5 @@
 .thumbnail {
-	max-height: 150px;
-	max-width: 150px;
+	width: 150px;
 	border: 1px solid #ddd;
   	border-radius: 4px;
   	padding: 1px;

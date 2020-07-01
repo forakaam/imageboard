@@ -15,6 +15,7 @@ class Post extends Component {
 	componentDidMount() {
 		let address = />>(\d{5,9})/g;
 		let quote = />(.*)/g;
+		let link = /(https?:\/\/\S+)/g;
 		let text = this.state.text;
 		text = reactStringReplace(text, address, (match, i) => {
 			this.props.linkReply(match);
@@ -24,7 +25,10 @@ class Post extends Component {
 			return <span className="greentext" key={match + i}>>{match}</span> 
 		});
 		text = reactStringReplace(text, /\n(.*)/, (match, i) => {
-			return <p>{match}</p> 
+			return <p key={match + i}>{match}</p> 
+		});
+		text = reactStringReplace(text, link, (match, i) => {
+			return <a href={match}>{match}</a>
 		});
 		this.setState({text});
 

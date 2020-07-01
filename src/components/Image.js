@@ -11,15 +11,25 @@ class Image extends Component {
 	render() {
 		const {filename, filesize, address, dimensions, thread_id} = this.props;
 		const {open} = this.state;
+		let img;
+		if (open) {
+			img = <img 
+				src={`./../images/${thread_id}/(${address})${filename}`} 
+				onClick={this.expandImage.bind(this)} 
+				className="image" />
+		}
+		else  {
+			img = <img 
+			src={`./../images/${thread_id}/thumb(${address})${filename}.jpg`} 
+			onClick={this.expandImage.bind(this)} 
+			className="thumbnail" />
+		}
 		return (
 			<div>
 				<div>{filename}({filesize}, {dimensions.width}x{dimensions.height}, 
 				<a href={`https://www.google.com/searchbyimage?&image_url=${process.env.BASE_URL}/${thread_id}/${filename}&safe=off`}>google</a>
 				</div>
-				<img 
-					src={`./../images/${thread_id}/(${address})${filename}`} 
-					onClick={this.expandImage.bind(this)} 
-					className={open ? "image" : "thumbnail"} />
+				{img}
 			</div>
 		)
 	}

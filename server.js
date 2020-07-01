@@ -69,6 +69,16 @@ app.get('/api/threads/:id', (req, res) => {
 		data = data.map(item => {
 			if (item.image) {
 				let path = `./dist/images/${item.thread_id}/(${item.address})${item.image}`;
+				let options = {
+					percentage: 10,
+					jpegOptions: {force: true}
+				}
+				let dimensions = sizeOf(path);
+				// imageThumbnail(path, options)
+				// .then(thumbnail => {
+				// 	let thumbPath  =`./dist/images/${item.thread_id}/thumb(${item.address})${item.image}.jpg`
+				// 	fs.writeFile(thumbPath, thumbnail);
+				// })
 				let bytes = fs.statSync(path).size;
 				item.filesize = filesize(bytes);
 				item.dimensions = sizeOf(path);
@@ -81,7 +91,7 @@ app.get('/api/threads/:id', (req, res) => {
 });
 
 app.post('/api/threads/new', upload.single('image'), (req, res) => {
-	let {subject, content, thread, name} = req.body; 
+	let {subject, content, name} = req.body; 
 	if (content.length > charLimit) {
 		res.status(400).end();
 	}
@@ -93,29 +103,30 @@ app.post('/api/threads/new', upload.single('image'), (req, res) => {
 			created_at: new Date(),
 			address: curAddress + 1
 		};
-		if (req.error) console.log(req.error)
 		knex('threads').insert({subject}).returning('id').then(ids	=> {
 			knex('posts').insert({thread_id: ids[0], head: true, ...post}).returning('thread_id').then(thread_ids => {
 				curAddress++;
 				if (req.file) {
 					let path = `./dist/images/${thread_ids[0]}`;
 					fs.mkdirsSync(path);
-					fs.rename(`./dist/images/temp/(${curAddress})${req.file.originalname}`,`${path}/(${curAddress})${req.file.originalname}`);
-					
-					imageThumbnail(path)
+					fs.renameSync(`./dist/images/temp/(${curAddress})${req.file.originalname}`,`${path}/(${curAddress})${req.file.originalname}`);
+					imageThumbnail(`${path}/(${curAddress})${req.file.originalname}`)
 					.then(thumbnail => {
-						console.log(thumbnail)
-						
-					}).catch(err => console.log(err));
+						let thumbPath  =`${path}/thumb(${curAddress})${req.file.originalname}.jpg`;
+						fs.writeFileSync(thumbPath, thumbnail);
+						res.json(thread_ids[0]);
+					})
 				}
-				res.json(thread_ids[0]);
+				else {
+					res.json(thread_ids[0]);
+				}
 			}).catch(err => res.status(500).send(err));
 		})
 	}
 });
 
 app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
-	let {subject, content, thread, name} = req.body; 
+	let {subject, content, name} = req.body; 
 	if (content.length > charLimit) {
 		res.status(400).end();
 	}
@@ -123,12 +134,21 @@ app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
 		let post = {
 			content: content == 'undefined' ? '' : content,
 			name,
+			thread_id: req.params.id,
+			head: false,
 			image: req.file ? req.file.originalname : null,
 			created_at: new Date(),
 			address: curAddress + 1
 		};
-		knex('posts').insert({thread_id: thread, head: false, ...post}).then(resp => {
+		knex('posts').insert({...post}).then(resp => {
 			curAddress++;
+			if (req.file) {
+				imageThumbnail(`./dist/images/${req.params.id}/(${curAddress})${req.file.originalname}`)
+				.then(thumbnail => {
+					let thumbPath  =`./dist/images/${req.params.id}/thumb(${curAddress})${req.file.originalname}.jpg`;
+					fs.writeFile(thumbPath, thumbnail);
+				})
+			}
 			res.status(201).end();
 
 		}).catch(err => res.status(500).send(err));

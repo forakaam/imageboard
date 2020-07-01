@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import Post from './Post'
+import Post from './Post';
+import Form from './Form';
+
 class Thread extends Component {
 	constructor(props) {
 		super(props);
@@ -27,14 +29,18 @@ class Thread extends Component {
 		else if (!isLoaded) {
 			return <div>Loading ... </div>
 		}
-		else {
+		else if (posts[0]) {
 			return (
 				<div>
-					{posts[0] && <h2>{posts[0]['title']}</h2>}
-					{posts[0] && posts[0].archived && <span>archived icon</span>}
+					<h2>{posts[0]['subject']}</h2>
+					{posts[0].archived && <span>archived icon</span>}
 					{posts.map(post => <Post key={post.id} {...post} linkReply={this.linkReply.bind(this, post.address)}/>)}
+					<Form parent={posts[0]['thread_id']} />
 				</div>
 			)
+		}
+		else  {
+			return <div>404: Not Found</div>
 		}
 	}
 	linkReply(reply, op){

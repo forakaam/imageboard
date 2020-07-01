@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const HtmlWebPackPlugin = require("html-webpack-plugin"),
   { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
@@ -11,6 +13,9 @@ const cleanWebpackPlugin = new CleanWebpackPlugin({
   cleanOnceBeforeBuildPatterns: ['**/*', '!images/**/**'],
 })
 module.exports = {
+  output: {
+    publicPath: process.env.ASSET_PATH,
+  },
   module: {
     rules: [
       {

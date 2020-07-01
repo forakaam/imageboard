@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Preview from './Preview';
+import Form from './Form';
 
 class Catalog extends Component {
 	constructor(props) {
@@ -31,6 +32,7 @@ class Catalog extends Component {
 			return (
 				<div>
 					{threads.map(thread => <Preview key={thread.thread_id} {...thread}/>)}
+					<Form/>
 				</div>
 			);
 		}

@@ -1,0 +1,32 @@
+.create-post {
+	position: fixed;
+	right: 50px;
+	bottom: 50px;
+	max-width: 100px;
+}
+
+.create-post:hover {
+	filter: drop-shadow(1px 1px 10px blue) hue-rotate(90deg);
+}
+.new-post-form {
+	position: fixed;
+	padding: 1px;
+	border: 2px solid black;
+	min-width: 300px;
+	border-radius: 3px 3px 0 0;
+	right: 0px;
+	top: 5%;
+}
+
+.new-post-form textarea {
+	min-width: 98%;
+	min-height: 10em;
+}
+
+.invalid {
+	color: red;
+}
+
+.subtext {
+	font-size: x-small;
+}

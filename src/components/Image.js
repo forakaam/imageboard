@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import '../styles/image.css';
+
 class Image extends Component {
 	constructor(props) {
 		super(props);
@@ -8,7 +9,7 @@ class Image extends Component {
 		}
 	}
 	render() {
-		const {filename, filesize, dimensions, thread_id} = this.props;
+		const {filename, filesize, address, dimensions, thread_id} = this.props;
 		const {open} = this.state;
 		return (
 			<div>
@@ -16,7 +17,7 @@ class Image extends Component {
 				<a href={`https://www.google.com/searchbyimage?&image_url=${process.env.BASE_URL}/${thread_id}/${filename}&safe=off`}>google</a>
 				</div>
 				<img 
-					src={`./../images/${thread_id}/${filename}`} 
+					src={`./../images/${thread_id}/(${address})${filename}`} 
 					onClick={this.expandImage.bind(this)} 
 					className={open ? "image" : "thumbnail"} />
 			</div>

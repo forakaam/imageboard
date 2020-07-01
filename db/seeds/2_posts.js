@@ -121,7 +121,7 @@ exports.seed = function(knex) {
         },
         {
           address: '95936240',
-          content: `    >>95936239
+          content: `>>95936239
           Holy shit, didn't think Thom Yorke would be way up there. Says his highest note is on Just, so did they count his "Ow!" or something?`,
           IP: '69.89.31.226',
           head: false,

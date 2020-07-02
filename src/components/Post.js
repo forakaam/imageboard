@@ -19,7 +19,7 @@ class Post extends Component {
 		let text = this.state.text;
 		text = reactStringReplace(text, address, (match, i) => {
 			this.props.linkReply(match);
-			return	<Address to={match} parent={this.props.address} key={match + i}/> 
+			return	<Address to={match} parent={this.props.address} highlight={this.props.highlight} key={match + i}/> 
 		});
 		text = reactStringReplace(text, quote, (match, i) => {
 			return <span className="greentext" key={match + i}>>{match}</span> 
@@ -28,18 +28,21 @@ class Post extends Component {
 			return <p key={match + i}>{match}</p> 
 		});
 		text = reactStringReplace(text, link, (match, i) => {
-			return <a href={match}>{match}</a>
+			return <a href={match + i}>{match}</a>
 		});
 		this.setState({text});
 
 	}
 	render() {
-		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies} = this.props;
+		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHighlighted} = this.props;
 		const {text} = this.state;
 		return (
-			<div>		
+			<div className={isHighlighted ? 'highlight' : ''}>		
 				<div className="header">
-					{name || 'Anonymous'} {created_at} <a id ={address}>No.{address}</a> {replies && replies.map(reply => <Address key={`${reply}${this.props.address}`}to={reply}/>)}
+					{name || 'Anonymous'} {created_at} <a id ={address}>No.{address}</a> 
+					{replies && replies.map(reply => {
+						return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />
+					})}
 				</div>
 				{image && <Image filename ={image} address={address} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}
 				<div>{text}</div>
@@ -50,7 +53,7 @@ class Post extends Component {
 		let re = /^>>(\d{5,9})/g;
 		let text = reactStringReplace(this.state.text, re, (match, i) => {
 			this.props.linkReply(match);
-			return	<Address to={match} parent={this.props.address} key={match + i}/> 
+			return	<Address to={match} parent={this.props.address} key={match + i} highlight={this.props.highlight}/> 
 		})
 		this.setState({text});
 	}

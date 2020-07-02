@@ -51,14 +51,14 @@ class Form extends Component {
 					this.props.history.push(`/threads/${data}`);
 				})
 			})
-			.catch(err => alert('Error: Submission failed ' + err))
+			.catch(err => alert('Error: Submission failed'))
 		}
 		else {
 			fetch(`/api/threads/${thread}/new`, opts).
 			then(res => {
 				if (res.status >= 400) throw new Error();
 			})
-			.catch(err => alert('Error: Submission failed ' + err))
+			.catch(err => alert('Error: Submission failed'))
 		}
 	}
 	handleClick(e) {

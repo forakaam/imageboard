@@ -11,7 +11,6 @@ class Thread extends Component {
 			error: null
 
 		}
-
 	}
 	componentDidMount() {
 		const {id} = this.props.match.params; 
@@ -34,7 +33,14 @@ class Thread extends Component {
 				<div>
 					<h2>{posts[0]['subject']}</h2>
 					{posts[0].archived && <span>archived icon</span>}
-					{posts.map(post => <Post key={post.id} {...post} linkReply={this.linkReply.bind(this, post.address)}/>)}
+					{posts.map(post => {
+						return <Post 
+							key={post.id} 
+							{...post} 
+							linkReply={this.linkReply.bind(this, post.address)} 
+							highlight={this.highlight.bind(this)}
+						/>
+					})}
 					<Form parent={posts[0]['thread_id']} />
 				</div>
 			)
@@ -43,16 +49,26 @@ class Thread extends Component {
 			return <div>404: Not Found</div>
 		}
 	}
-	linkReply(reply, op){
+	linkReply(reply, parent){
 		let {posts} = this.state;
 		for (let i = 0; i < posts.length; i++) {
-			if (posts[i].address == op) {
+			if (posts[i].address == parent) {
 				if (posts[i].replies) {
 					posts[i].replies.push(reply);
 				}
 				else {
 					posts[i].replies = [reply];
 				}
+				this.setState({posts});
+				return;
+			}
+		}
+	}
+	highlight(address, isHovering) {
+		let posts = this.state.posts;
+		for (let i = 0; i < posts.length; i++){
+			if (posts[i].address == address){
+				posts[i].isHighlighted = isHovering;
 				this.setState({posts});
 				return;
 			}

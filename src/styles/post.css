@@ -5,3 +5,7 @@ p {
 	margin-block-end: 0;
     margin-block-start: 0;
 }
+
+.highlight {
+	border: solid 1px red;
+}

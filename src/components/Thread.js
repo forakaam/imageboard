@@ -64,11 +64,14 @@ class Thread extends Component {
 			}
 		}
 	}
-	highlight(address, isHovering) {
+	highlight(address, isHovering, e) {
+
 		let posts = this.state.posts;
 		for (let i = 0; i < posts.length; i++){
 			if (posts[i].address == address){
-				posts[i].isHighlighted = isHovering;
+				posts[i].isHovering = isHovering;
+				posts[i].x = e.pageX;
+				posts[i].y = e.pageY;
 				this.setState({posts});
 				return;
 			}

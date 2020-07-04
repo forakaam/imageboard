@@ -10,7 +10,8 @@ class Post extends Component {
 		super(props);
 		this.state = {
 			text: this.props.content
-		}
+		};
+		this.node = React.createRef()
 	}
 	componentDidMount() {
 		let address = />>(\d{5,9})/g;
@@ -34,18 +35,22 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHighlighted} = this.props;
+		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y} = this.props;
 		const {text} = this.state;
+		let post = 	<div ref={this.node}>		
+			<div className="header">
+				{name || 'Anonymous'} {created_at} <a id ={address}>No.{address}</a> 
+				{replies && replies.map(reply => {
+					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />
+				})}
+			</div>
+			{image && <Image filename ={image} address={address} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}
+			<div>{text}</div>
+		</div>
 		return (
-			<div className={isHighlighted ? 'highlight' : ''}>		
-				<div className="header">
-					{name || 'Anonymous'} {created_at} <a id ={address}>No.{address}</a> 
-					{replies && replies.map(reply => {
-						return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />
-					})}
-				</div>
-				{image && <Image filename ={image} address={address} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}
-				<div>{text}</div>
+			<div>
+				{<div className={isHovering ? 'highlight' : ''} > {post} </div>}
+				{isHovering && <div className="reply" style={{top: y, left: x}}>{post}</div>}
 			</div>
 		)
 	}			
@@ -64,6 +69,18 @@ class Post extends Component {
 		}); 
 		this.setState({text})
 	}
+	// inViewport(){
+	// 	let n = this.node.current;
+	// 	if (n) {
+	// 		let bounding = n.getBoundingClientRect();
+	// 		if (bounding.top >= 0 && bounding.left >= 0 && 
+	// 			bounding.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+	// 			bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)) {
+	// 				return true
+	// 			}
+	// 	}
+	// 	return false;
+	// }
 
 }
 

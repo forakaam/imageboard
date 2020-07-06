@@ -9,7 +9,8 @@ class Post extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
-			text: this.props.content
+			text: this.props.content,
+			backgroundColor: ''
 		};
 		this.node = React.createRef()
 	}
@@ -35,14 +36,15 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y} = this.props;
+		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid} = this.props;
 		const {text} = this.state;
+		let backgroundColor = this.colorId(uid);
 		let post = 	<div ref={this.node}>		
 			<div className="header">
-				{name || 'Anonymous'} {created_at} <a id ={address}>No.{address}</a> 
-				{replies && replies.map(reply => {
+				{name || 'Anonymous'} {created_at} (ID: <span class="uid" style={{backgroundColor}}>{uid}</span>) <a id ={address}>No.{address}</a> 
+				 {replies && replies.map(reply => {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />
-				})}
+				 })}
 			</div>
 			{image && <Image filename ={image} address={address} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}
 			<div>{text}</div>
@@ -53,35 +55,13 @@ class Post extends Component {
 				{isHovering && <div className="reply" style={{top: y, left: x}}>{post}</div>}
 			</div>
 		)
+	}
+	colorId(uid){
+		let colors = ['#ff1d58','#f75990', '#fff685', '#00DDFF', '#0049B7', '#8bf0ba', '#0e0fed', '#94f0f1', '#f2b1d8',];
+		let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+		let i = chars.indexOf(uid[2]) % colors.length;
+		return colors[i];
 	}			
-	linkAddresses() {
-		let re = /^>>(\d{5,9})/g;
-		let text = reactStringReplace(this.state.text, re, (match, i) => {
-			this.props.linkReply(match);
-			return	<Address to={match} parent={this.props.address} key={match + i} highlight={this.props.highlight}/> 
-		})
-		this.setState({text});
-	}
-	markGreentext() {
-		let re = /^>(.*)/g;
-		let text = reactStringReplace(this.state.text, re, (match, i) => {
-			return <span className="greentext" key={match + i}>>{match}</span> 
-		}); 
-		this.setState({text})
-	}
-	// inViewport(){
-	// 	let n = this.node.current;
-	// 	if (n) {
-	// 		let bounding = n.getBoundingClientRect();
-	// 		if (bounding.top >= 0 && bounding.left >= 0 && 
-	// 			bounding.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-	// 			bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight)) {
-	// 				return true
-	// 			}
-	// 	}
-	// 	return false;
-	// }
-
 }
 
 export default Post;

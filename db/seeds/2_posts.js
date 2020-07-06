@@ -11,6 +11,7 @@ exports.seed = function(knex) {
           content: 'Post unsettling images',
           IP: '69.89.31.226',
           image: '1591692573308.jpg',
+          uid: '0Q9KWGq4',
           head: true,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 1
@@ -19,6 +20,7 @@ exports.seed = function(knex) {
           address: '25191104',
           content: '>>25191103  Creepy!',
           IP: '69.89.31.225',
+          uid: 'fzhJEp66',
           image: '1591702978091.jpg',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -27,6 +29,7 @@ exports.seed = function(knex) {
         {          address: '25191105',
           content: '',
           IP: '69.89.31.226',
+          uid: '0Q9KWGq4',
           image: '1591724924905.jpg',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -41,6 +44,7 @@ exports.seed = function(knex) {
           >Positives:
           >Negatives:`,
           IP: '69.89.31.226',
+          uid: '0Q9KWGq4',
           image: '1591854487873.jpg',
           head: true,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -55,6 +59,7 @@ exports.seed = function(knex) {
           >Negatives: Probably the food, bad medicine, war, no vidya, no books
           Not that fucked. Could be A LOT worse.`,
           IP: '69.89.31.225',
+          uid: 'fzhJEp66',
           image: '1591854971169.jpg',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -67,6 +72,7 @@ exports.seed = function(knex) {
           >Negatives: leaving current qt Chinese waifu, lack of access to much of modern medicine (although Ayurveda was pretty good at finding the plants we get all the modern extracts from anyways), surgery is very risky to do without true general anaesthetic so much unnecessary death, it's 500 BC so no more 4chinz or any social media to occupy my time and no beautiful modern cityscapes to lose myself in (although ancient Indian cities are still beautiful to lose yourself in to this day desu)
           Idk seems like a net positive just because of food security except for the fact that I don't want to leave parents and gf );`,
           IP: '69.89.31.233',
+          uid: 'XKT4sFEc',
           image: '1591855004718.png',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -76,6 +82,7 @@ exports.seed = function(knex) {
           content: `>>88839600
           India would be cozy`,
           IP: '69.89.31.228',
+          uid: 'm4NyHDLV',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -88,6 +95,7 @@ exports.seed = function(knex) {
           >Positives: im fucked
           >Negatives: literally everything`,
           IP: '69.89.31.333',
+          uid: 'FwEfJP4h',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -96,6 +104,7 @@ exports.seed = function(knex) {
           content: `>Possesses a range of four fucking octaves 
           Why do people say this? He also conveyed incredible emotion and had an amazing scream.`,
           IP: '69.89.31.226',
+          uid: '0Q9KWGq4',
           image: '1591921503473.gif',
           head: true,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -106,6 +115,7 @@ exports.seed = function(knex) {
           content: `>>95936237
     Because people don't know much and in general are kind of dumb`,
           IP: '69.89.33.276',
+          uid: 'yzy9IiJZ',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 3
@@ -115,6 +125,7 @@ exports.seed = function(knex) {
           content: `Cobain had a very impressive vocal range actually. His vocal range was right up there with the likes of Aretha Franklin, Kelly Clarkston, Bob Dylon and even Justin Bieber. He may have been the best all time of screaming pitch perfect tones.
           Check out this list of vocalists and their vocal range. Cobain was no joke: https://www.concerthotels.com/worlds-greatest-vocal-ranges`,
           IP: '69.89.31.626',
+          uid: 'kTcuXQaQ',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 3
@@ -124,6 +135,7 @@ exports.seed = function(knex) {
           content: `>>95936239
           Holy shit, didn't think Thom Yorke would be way up there. Says his highest note is on Just, so did they count his "Ow!" or something?`,
           IP: '69.89.31.226',
+          uid: '0Q9KWGq4',
           head: false,
           created_at: new Date(new Date().getTime() + (sec += 300000)),
           thread_id: 3

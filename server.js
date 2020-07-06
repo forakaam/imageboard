@@ -54,7 +54,7 @@ const upload = multer({
 });
 
 app.get('/api/threads', (req, res) => {
-	knex('threads').select('posts.thread_id', 'image', 'name', 'address', 'images', 'subject', 'content', 'replies', 'created_at').join(
+	knex('threads').select('posts.thread_id', 'image', 'name', 'address', 'images', 'subject', 'content', 'replies', 'created_at', 'uid').join(
 		knex('posts').count({ replies: 'id'}).count({images: knex.raw('case when image is not null then 1 end')})
 		.select('thread_id').groupBy('thread_id').as('replies'), 'replies.thread_id', '=', 'threads.id')
 	.join('posts', 'posts.thread_id', '=', 'threads.id').where('head', true)
@@ -63,7 +63,7 @@ app.get('/api/threads', (req, res) => {
 });
 
 app.get('/api/threads/:id', (req, res) => {
-	knex('threads').select('posts.id','thread_id', 'image', 'name', 'subject', 'content', 'created_at', 'archived', 'address')
+	knex('threads').select('posts.id','thread_id', 'image', 'name', 'subject', 'content', 'created_at', 'archived', 'address', 'uid')
 	.join('posts', 'posts.thread_id', '=', 'threads.id').where('threads.id', req.params.id)
 	.then(data => {
 		data = data.map(item => {
@@ -74,11 +74,6 @@ app.get('/api/threads/:id', (req, res) => {
 					jpegOptions: {force: true}
 				}
 				let dimensions = sizeOf(path);
-				// imageThumbnail(path, options)
-				// .then(thumbnail => {
-				// 	let thumbPath  =`./dist/images/${item.thread_id}/thumb(${item.address})${item.image}.jpg`
-				// 	fs.writeFile(thumbPath, thumbnail);
-				// })
 				let bytes = fs.statSync(path).size;
 				item.filesize = filesize(bytes);
 				item.dimensions = sizeOf(path);
@@ -101,7 +96,9 @@ app.post('/api/threads/new', upload.single('image'), (req, res) => {
 			name,
 			image: req.file ? req.file.originalname : null,
 			created_at: new Date(),
-			address: curAddress + 1
+			IP: req.ip,
+			address: curAddress + 1,
+			uid: newId()
 		};
 		knex('threads').insert({subject}).returning('id').then(ids	=> {
 			knex('posts').insert({thread_id: ids[0], head: true, ...post}).returning('thread_id').then(thread_ids => {
@@ -131,30 +128,44 @@ app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
 		res.status(400).end();
 	}
 	else {
-		let post = {
-			content: content == 'undefined' ? '' : content,
-			name,
-			thread_id: req.params.id,
-			head: false,
-			image: req.file ? req.file.originalname : null,
-			created_at: new Date(),
-			address: curAddress + 1
-		};
-		knex('posts').insert({...post}).then(resp => {
-			curAddress++;
-			if (req.file) {
-				imageThumbnail(`./dist/images/${req.params.id}/(${curAddress})${req.file.originalname}`)
-				.then(thumbnail => {
-					let thumbPath  =`./dist/images/${req.params.id}/thumb(${curAddress})${req.file.originalname}.jpg`;
-					fs.writeFile(thumbPath, thumbnail);
-				})
-			}
-			res.status(201).end();
+		knex('posts').where({IP: req.ip, thread_id: req.params.id}).select('uid').first().then(match => {
+			let post = {
+				content: content == 'undefined' ? '' : content,
+				name,
+				thread_id: req.params.id,
+				head: false,
+				uid: match ? match.uid : newId(),
+				IP: req.ip,
+				image: req.file ? req.file.originalname : null,
+				created_at: new Date(),
+				address: curAddress + 1
+			};
+			knex('posts').insert({...post}).then(resp => {
+				curAddress++;
+				if (req.file) {
+					imageThumbnail(`./dist/images/${req.params.id}/(${curAddress})${req.file.originalname}`)
+					.then(thumbnail => {
+						let thumbPath  =`./dist/images/${req.params.id}/thumb(${curAddress})${req.file.originalname}.jpg`;
+						fs.writeFile(thumbPath, thumbnail);
+					})
+				}
+				res.status(201).end();
 
-		}).catch(err => res.status(500).send(err));
+			})
+		})
+		// .catch(err => res.status(500).send(err));
 	}
 });
 
+function newId(){
+	let length = 8;
+	let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+	let id = '';
+	for (let i = 0; i < length; i++){
+		id += chars[Math.floor(Math.random() * chars.length)];
+	}
+	return id;
+}
  app.get('*', (req, res) => {
  	res.sendFile(path.join(__dirname, 'dist', 'index.html'));
  })

@@ -7,12 +7,12 @@ class Form extends Component {
 		super(props);
 		this.state = {
 			open: false,
-			thread: this.props.parent,
+			thread: this.props.thread_id,
 			name: '',
 			content: this.props.content || '',
 			subject: '',
 		}
-		this.image = React.createRef();
+		this.node = React.createRef();
 		this.handleClick = this.handleClick.bind(this);
     	this.handleChange = this.handleChange.bind(this);
     	this.handleSubmit = this.handleSubmit.bind(this);
@@ -28,13 +28,14 @@ class Form extends Component {
 		e.preventDefault();
 		this.setState({open:false});
 		let form = new FormData()
-		form.append('image', this.image.current.files[0]);
+		form.append('image', this.node.
+			t.files[0]);
 		form.append('content', content);
 		form.append('subject', subject);
 		form.append('name', name);
 		this.setState({
 			content: '',
-			thread: this.props.parent,
+			thread: this.props.thread_id,
 			subject: '',
 			name: ''
 		});
@@ -43,7 +44,7 @@ class Form extends Component {
 			method: 'POST',
 			body: form
 		};
-		if (!this.props.parent || thread == "new") {
+		if (!this.props.thread_id || thread == "new") {
 			fetch(`/api/threads/new`, opts)
 			.then(res => {
 				if (res.status >= 400) throw new Error();
@@ -65,7 +66,7 @@ class Form extends Component {
 		this.setState({open:true});
 	}
 	render() {
-		let {parent} = this.props;
+		let {thread_id} = this.props;
 		let {open, thread, name, content, subject} = this.state;
 		let overLimit = false;
 		let charLimit = 500;
@@ -80,16 +81,16 @@ class Form extends Component {
 						<input type="text" placeholder="Name(optional)" name="name" value={name} onChange={this.handleChange}/>
 						<select name="thread" value={thread} onChange={this.handleChange}>
 							<option value="new">New Thread</option>
-							{parent  && <option value={parent}>Thread {parent}</option> }
+							{thread_id  && <option value={thread_id}>Thread {thread_id}</option> }
 						</select> 
-						{(!this.props.parent || thread == "new") && <input type="text" placeholder="Subject" name="subject" value={subject} onChange={this.handleChange}/>}
+						{(!thread_id || thread == "new") && <input type="text" placeholder="Subject" name="subject" value={subject} onChange={this.handleChange}/>}
 					</div>
 					<div>
 						<textarea placeholder="Comment" name="content" value={content} onChange={this.handleChange}/>
 						<span className={overLimit ? 'invalid subtext' : 'subtext'}>Character Limit: {content.length}/{charLimit}</span>
 					</div>
 					<div>
-						<input type="file" name="image" accept=".jpg, .jpeg, .png, .gif" ref={this.image}/>
+						<input type="file" name="image" accept=".jpg, .jpeg, .png, .gif" ref={this.node}/>
 						<input type="submit" name="submit" />
 					</div>
 				</form>

@@ -1,0 +1,16 @@
+header {
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+.gallery-icon {
+	height: 2em;
+	float: right;
+	margin-right: 20px;
+
+}
+
+.gallery-icon:hover {
+	height: 2.5em;
+	background-color: blue;
+}

@@ -1,4 +1,5 @@
 .create-post {
+	background-color:rgba(0,0,0,0);
 	position: fixed;
 	right: 50px;
 	bottom: 50px;

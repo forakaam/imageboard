@@ -139,7 +139,7 @@ exports.seed = function(knex) {
           head: false,
           created_at: new Date(new Date().getTime() + (sec += 300000)),
           thread_id: 3
-        },
+        }
       ]);
     });
 };

@@ -7,11 +7,13 @@ const express = require('express'),
 	methodOverride = require('method-override'),
 	knex = require('./db/knex'),
 	fs = require('fs-extra'),
+	bcrypt = require('bcrypt'),
 	filesize = require('filesize'),
 	sizeOf = require('image-size'),
 	imageThumbnail = require('image-thumbnail')
 	port = process.env.PORT || 3000,
-	charLimit = 500;
+	charLimit = 500,
+	saltRounds = 10;
 
 app.use(express.static(path.join(__dirname, 'dist')));
 app.use(methodOverride('_method'));
@@ -54,7 +56,7 @@ const upload = multer({
 });
 
 app.get('/api/threads', (req, res) => {
-	knex('threads').select('posts.thread_id', 'image', 'name', 'address', 'images', 'subject', 'content', 'replies', 'created_at', 'uid').join(
+	knex('threads').select('posts.thread_id', 'image', 'name', 'address', 'tripcode', 'images', 'subject', 'content', 'replies', 'created_at', 'uid').join(
 		knex('posts').count({ replies: 'id'}).count({images: knex.raw('case when image is not null then 1 end')})
 		.select('thread_id').groupBy('thread_id').as('replies'), 'replies.thread_id', '=', 'threads.id')
 	.join('posts', 'posts.thread_id', '=', 'threads.id').where('head', true)
@@ -63,7 +65,7 @@ app.get('/api/threads', (req, res) => {
 });
 
 app.get('/api/threads/:id', (req, res) => {
-	knex('threads').select('posts.id','thread_id', 'image', 'name', 'subject', 'content', 'created_at', 'archived', 'address', 'uid')
+	knex('threads').select('posts.id','thread_id', 'image', 'name', 'subject', 'content', 'tripcode', 'created_at', 'archived', 'address', 'uid')
 	.join('posts', 'posts.thread_id', '=', 'threads.id').where('threads.id', req.params.id)
 	.then(data => {
 		data = data.map(item => {
@@ -86,17 +88,26 @@ app.get('/api/threads/:id', (req, res) => {
 });
 
 app.post('/api/threads/new', upload.single('image'), (req, res) => {
-	let {subject, content, name} = req.body; 
+
+	let {subject, content, name} = req.body;
+	let tripcode = /(.*)#(.*)/;
+	let hash = null; 
 	if (content.length > charLimit) {
 		res.status(400).end();
 	}
 	else {
+		if (name && name.match(tripcode)) {
+			let matches = name.match(tripcode);
+			hash = bcrypt.hashSync(matches[2], saltRounds).substring(40,60).replace(/\./g,'я');
+			name = matches[1];
+		}
 		let post = {
 			content: content == 'undefined' ? '' : content,
 			name,
 			image: req.file ? req.file.originalname : null,
 			created_at: new Date(),
 			IP: req.ip,
+			tripcode: hash,
 			address: curAddress + 1,
 			uid: newId()
 		};
@@ -124,16 +135,25 @@ app.post('/api/threads/new', upload.single('image'), (req, res) => {
 
 app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
 	let {subject, content, name} = req.body; 
+	let tripcode = /(.*)#(.*)/;
+	let hash = null; 
 	if (content.length > charLimit) {
 		res.status(400).end();
 	}
 	else {
+		if (name && name.match(tripcode)) {
+			let matches = name.match(tripcode);
+			hash = bcrypt.hashSync(matches[2], saltRounds).substring(40,60).replace(/\./g,'я')
+;
+			name = matches[1];
+		}
 		knex('posts').where({IP: req.ip, thread_id: req.params.id}).select('uid').first().then(match => {
 			let post = {
 				content: content == 'undefined' ? '' : content,
 				name,
 				thread_id: req.params.id,
 				head: false,
+				tripcode: hash,
 				uid: match ? match.uid : newId(),
 				IP: req.ip,
 				image: req.file ? req.file.originalname : null,

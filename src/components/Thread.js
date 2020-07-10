@@ -3,6 +3,7 @@ import Header from './Header';
 import Post from './Post';
 import Form from './Form';
 import Gallery from './Gallery';
+import '../styles/thread.css';
 
 class Thread extends Component {
 	constructor(props) {

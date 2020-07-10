@@ -7,6 +7,7 @@ exports.up = function(knex) {
 		table.string('name');
 		table.string('image');
 		table.string('uid');
+		table.string('tripcode');
 		table.boolean('head');
 		table.timestamp('created_at', {precision:  2}).defaultTo(knex.fn.now(2));
 		table.integer('thread_id').unsigned().index().references('threads.id').onDelete('CASCADE');

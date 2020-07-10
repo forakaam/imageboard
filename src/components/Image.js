@@ -26,11 +26,14 @@ class Image extends Component {
 		}
 		return (
 			<div>
-				<div>{filename}
-					<a href={`./../images/${thread_id}/(${address})${filename}`} download={filename} >
-						<img src={`./../images/assets/download_icon.png`} className="download-icon"/>
-					</a>
-					({filesize}, {dimensions.width}x{dimensions.height}) 
+				<div>{filename} 
+				{' '}
+				<a href={`./../images/${thread_id}/(${address})${filename}`} download={filename}>
+					<img src={`./../images/assets/download_icon.png`} className="download-icon"/>
+				</a>
+				{' '}
+				({filesize}, {dimensions.width}x{dimensions.height})
+				{' '} 
 				<a href={`https://www.google.com/searchbyimage?&image_url=${process.env.BASE_URL}/${thread_id}/${filename}&safe=off`}>google</a>
 				</div>
 				{img}

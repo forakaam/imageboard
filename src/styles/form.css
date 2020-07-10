@@ -31,3 +31,10 @@
 .subtext {
 	font-size: x-small;
 }
+.exit-icon-form {
+    background: rgba(0,0,0,0);
+    position: absolute;
+    right: 5px;
+    bottom: 183px;
+    height: 2em;
+}

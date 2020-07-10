@@ -41,7 +41,7 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current} = this.props;
+		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode} = this.props;
 		const {text} = this.state;
 		if (current){
 			this.node.current.scrollIntoView();
@@ -49,8 +49,12 @@ class Post extends Component {
 		let backgroundColor = this.colorId(uid);
 		let post = 	<div ref={this.node}>		
 			<div className="header">
-				{name || 'Anonymous'} {created_at} (ID: <span class="uid" style={{backgroundColor}}>{uid}</span>) <a id ={address}>No.{address}</a> 
-				 {replies && replies.map(reply => {
+				{name || 'Anonymous'}{' '} 
+				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
+				{created_at}{' '}
+				(ID: <span class="uid" style={{backgroundColor}}>{uid}</span>) 
+				<a id ={address}> No.{address} </a>
+				{replies && replies.map(reply => {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />
 				 })}
 			</div>

@@ -18,6 +18,9 @@ class Thread extends Component {
 		}
 	this.toggleGallery = this.toggleGallery.bind(this);
 	this.changeImage = this.changeImage.bind(this);
+	this.linkReply = this.linkReply.bind(this); 
+	this.highlight = this.highlight.bind(this);
+	this.thread = this.thread.bind(this);
 	}
 
 	componentDidMount() {
@@ -56,14 +59,7 @@ class Thread extends Component {
 					<Header toggleGallery={this.toggleGallery}/>
 					<h2>{head.subject}</h2>
 					{head.archived && <span>archived icon</span>}
-					{posts.map(post => {
-						return <Post 
-							key={post.id} 
-							{...post} 
-							linkReply={this.linkReply.bind(this, post.address)} 
-							highlight={this.highlight.bind(this)}
-						/>
-					})}
+					{this.threadPosts(posts)}
 					<Form thread_id={head.thread_id} />
 					{showGallery && <Gallery 
 						images={images} 
@@ -78,31 +74,69 @@ class Thread extends Component {
 			return <div>404: Not Found</div>
 		}
 	}
+	threadPosts(posts) {
+		return posts.map(post => {
+			return  (
+				<div>
+					<Post 
+						key={post.id} 
+						{...post} 
+						linkReply={this.linkReply.bind(this, post.address)} 
+						highlight={this.highlight}
+						thread={this.thread}
+
+					/>
+					{post.children && 
+					<div className="replies">
+						{this.threadPosts(post.children)}
+					</div>}
+				</div>
+		)
+		});
+	}
 	linkReply(reply, parent){
 		let {posts} = this.state;
-		for (let i = 0; i < posts.length; i++) {
-			if (posts[i].address == parent) {
-				if (posts[i].replies) {
-					posts[i].replies.push(reply);
+		findPost(posts);
+		this.setState({posts});
+		function findPost(arr) {
+			for (let i = 0; i < arr.length; i++) {
+				if (arr[i].address == parent) {
+					if (!arr[i].replies) {
+						arr[i].replies = [];
+					}
+					if (!arr[i].replies.includes(reply)) {
+						arr[i].replies.push(reply);	
+					}
+					return true;
 				}
-				else {
-					posts[i].replies = [reply];
+				else if (arr[i].children) {
+					if (findPost(arr[i].children)) {
+						return true;
+					}
 				}
-				this.setState({posts});
-				return;
 			}
+			return false;
 		}
 	}
 	highlight(address, isHovering, e) {
-		let {posts} = this.state;
-		for (let i = 0; i < posts.length; i++){
-			if (posts[i].address == address){
-				posts[i].isHovering = isHovering;
-				posts[i].x = e.pageX;
-				posts[i].y = e.pageY;
-				this.setState({posts});
-				return;
+		let posts = this.state.posts
+		findPost(posts);
+		this.setState({posts});
+		function findPost(arr) {
+			for (let i = 0; i < arr.length; i++){
+				if (arr[i].address == address){
+					arr[i].isHovering = isHovering;
+					arr[i].x = e.pageX;
+					arr[i].y = e.pageY;
+					return true;
+				}
+				else if (arr[i].children) {
+					if (findPost(arr[i].children)) {
+						return true;
+					}
+				}
 			}
+			return false;
 		}
 	}
 	toggleGallery(){
@@ -121,6 +155,46 @@ class Thread extends Component {
 			return post;
 		});
 		this.setState({current: address, posts});
+	}
+	thread(parent, child) {
+		let {posts} = this.state;
+		let post = findChild(posts, child);
+		if (post) {
+			if (insertChild(posts, parent, post)) {
+				this.setState({posts});
+			}
+		}
+		function findChild(arr, child){
+			for (let i = 0; i < arr.length; i++) {
+				if (arr[i].address == child) {
+					return arr.splice(i,1)[0];
+				}
+				if (arr[i].children) {
+					let child = findChild(arr[i].children)
+					if (child) {
+						return child;
+					}
+				}
+			}
+			return false
+		}
+		function insertChild(arr, parent, post){
+			for (let i = 0; i < arr.length; i++) {
+				if (arr[i].address == parent) {
+					if (!arr[i].children) {
+						arr[i].children = [];
+					}
+					arr[i].children.push(post);
+					return true;
+				}
+				if (arr[i].children) {
+					if (insertChild(arr[i].children, parent, post)) {
+						return true;
+					}
+				}
+			}
+			return false
+		}
 	}
 }
 

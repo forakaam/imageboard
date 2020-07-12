@@ -9,7 +9,8 @@ class Post extends Component {
 		super(props);
 		this.state = {
 			text: this.props.content,
-			backgroundColor: ''
+			backgroundColor: '',
+			parents: [],
 		};
 		this.node = React.createRef()
 	}
@@ -18,9 +19,13 @@ class Post extends Component {
 		let quote = />(.*)/g;
 		let link = /(https?:\/\/\S+)/g;
 		let formattedLink = /(\[.*\]\(https?:\/\/\S+\))/g;
+		let paragraph = /\n(.*)/g;
 		let text = this.state.text;
 		text = reactStringReplace(text, address, (match, i) => {
 			this.props.linkReply(match);
+			let parents = this.state.parents;
+			parents.push(match);
+			this.setState({parents});
 			return	<Address to={match} parent={this.props.address} highlight={this.props.highlight} key={match + i}/> 
 		});
 		text = reactStringReplace(text, quote, (match, i) => {
@@ -34,15 +39,18 @@ class Post extends Component {
 		text = reactStringReplace(text, link, (match, i) => {
 			return <a href={match + i} key={match + i}>{match}</a>
 		});
-		text = reactStringReplace(text, /\n(.*)/, (match, i) => {
+		text = reactStringReplace(text, paragraph, (match, i) => {
 			return <p key={match + i}>{match}</p> 
 		});
 		this.setState({text});
 
 	}
 	render() {
-		const {image, archived, thread_id, name, content, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode} = this.props;
-		const {text} = this.state;
+		const {image, archived, thread_id, name, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode} = this.props;
+		const {text, parents} = this.state;
+		if (parents.length === 1) {
+			this.props.thread(parents[0], address);
+		}
 		if (current){
 			this.node.current.scrollIntoView();
 		}

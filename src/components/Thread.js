@@ -13,12 +13,14 @@ class Thread extends Component {
 			posts: [],
 			error: null,
 			current: '',
-			showGallery: false
+			showGallery: false,
+			formLink: ''
 
 		}
 	this.toggleGallery = this.toggleGallery.bind(this);
 	this.changeImage = this.changeImage.bind(this);
 	this.linkReply = this.linkReply.bind(this); 
+	this.linkForm = this.linkForm.bind(this); 
 	this.highlight = this.highlight.bind(this);
 	this.thread = this.thread.bind(this);
 	this.markUsersPosts = this.markUsersPosts.bind(this);
@@ -46,7 +48,7 @@ class Thread extends Component {
 		}).catch(error => this.setState({error}));
 	}
 	render() {
-		const {isLoaded, error, posts, showGallery, current, images} = this.state
+		const {isLoaded, error, posts, showGallery, current, images, formLink} = this.state
 		let head = posts[0];
 		if (error) {
 			return <div>Error: {error}</div>
@@ -61,7 +63,7 @@ class Thread extends Component {
 					<h2>{head.subject}</h2>
 					{head.archived && <span>archived icon</span>}
 					{this.threadPosts(posts)}
-					<Form thread_id={head.thread_id} />
+					<Form thread_id={head.thread_id} link={formLink} linkForm={this.linkForm}/>
 					{showGallery && <Gallery 
 						images={images} 
 						current={current} 
@@ -85,6 +87,7 @@ class Thread extends Component {
 						linkReply={this.linkReply.bind(this, post.address)} 
 						highlight={this.highlight}
 						markUsersPosts={this.markUsersPosts}
+						linkForm={this.linkForm}
 						thread={this.thread}
 
 					/>
@@ -216,6 +219,10 @@ class Thread extends Component {
 			}
 
 		}
+	}
+	linkForm(address) {
+		console.log(address)
+		this.setState({formLink: address})
 	}
 }
 

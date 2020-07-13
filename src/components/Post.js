@@ -23,7 +23,7 @@ class Post extends Component {
 		let text = this.state.text;
 		text = reactStringReplace(text, address, (match, i) => {
 			this.props.linkReply(match);
-			let parents = this.state.parents;
+			let {parents} = this.state;
 			parents.push(match);
 			this.setState({parents});
 			return	<Address to={match} parent={this.props.address} highlight={this.props.highlight} key={match + i}/> 
@@ -46,7 +46,7 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked} = this.props;
+		const {image, archived, thread_id, name, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
 		const {text, parents} = this.state;
 		if (parents.length === 1) {
 			this.props.thread(parents[0], address);
@@ -61,9 +61,9 @@ class Post extends Component {
 				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
 				{created_at}{' '}
 				(ID: <span class="uid" style={{backgroundColor}} onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
-				<a id ={address}> No.{address} </a>
+				<a id ={address} className="address" onClick={linkForm.bind(this, address)}> No.{address} </a>
 				{replies && replies.map(reply => {
-					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />
+					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight}/>
 				 })}
 			</div>
 			{image && <Image filename ={image} address={address} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}

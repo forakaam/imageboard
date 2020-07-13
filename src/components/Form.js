@@ -6,11 +6,12 @@ class Form extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			open: false,
+			open: this.props.open,
 			thread: this.props.thread_id,
 			name: '',
-			content: this.props.content || '',
+			content: '',
 			subject: '',
+			links: []
 		}
 		this.node = React.createRef();
 		this.handleClick = this.handleClick.bind(this);
@@ -59,17 +60,29 @@ class Form extends Component {
 		this.setState({open:true});
 	}
 	resetState(){
+		this.props.linkForm('');
 		this.setState({
 			open: false,
 			content: '',
 			thread: this.props.thread_id,
 			subject: '',
-			name: ''
+			name: '',
+			links: []
+
 		});
 	}
 	render() {
-		let {thread_id} = this.props;
-		let {open, thread, name, content, subject} = this.state;
+		let {thread_id, link} = this.props;
+		let {open, thread, name, content, subject, links} = this.state;
+		if (link && !links.includes(link)) {
+			if (content) {
+				content += '\n';
+			}
+			content += `>>${link}`;
+			links.push(link);
+			this.setState({content, links, open:true});
+
+		}
 		let overLimit = false;
 		let charLimit = 500;
 		if (content.length > charLimit) overLimit = true;

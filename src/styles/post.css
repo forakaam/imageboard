@@ -24,3 +24,6 @@ p {
 .marked {
 	background-color: rgb(128, 0, 0);
 }
+.address:hover {
+	color: red;
+}

@@ -18,3 +18,9 @@ p {
 	color: green;
     font-weight: bold;
 }
+.post {
+	background-color: rgb(240, 224, 214);
+}
+.marked {
+	background-color: rgb(128, 0, 0);
+}

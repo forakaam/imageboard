@@ -3,7 +3,7 @@ import '../styles/gallery.css';
 
 class Gallery extends Component {
 	render() {
-		const {current, images, thread_id, changeImage} = this.props; 
+		const {current, images, thread_id, changeImage, toggleGallery} = this.props; 
 		let thumbnails = images.map(image => {
 			return (
 				<img 
@@ -18,7 +18,7 @@ class Gallery extends Component {
 				<div className="image-box">
 					<img className="current-image" src={`./../images/${thread_id}/(${image.address})${image.filename}`}/>
 				</div>
-				<img src={`./../images/assets/exit_icon.png`} className="exit-icon" onClick={this.props.toggleGallery.bind(this)}/>
+				<img src={`./../images/assets/exit_icon.png`} className="exit-icon" onClick={toggleGallery.bind(this)}/>
 				<div className="sidebar">
 				{thumbnails}
 				</div>

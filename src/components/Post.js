@@ -46,7 +46,7 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode} = this.props;
+		const {image, archived, thread_id, name, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked} = this.props;
 		const {text, parents} = this.state;
 		if (parents.length === 1) {
 			this.props.thread(parents[0], address);
@@ -55,12 +55,12 @@ class Post extends Component {
 			this.node.current.scrollIntoView();
 		}
 		let backgroundColor = this.colorId(uid);
-		let post = 	<div ref={this.node}>		
+		let post = 	<div ref={this.node} className={marked ? 'marked' : 'post'}>		
 			<div className="header">
 				{name || 'Anonymous'}{' '} 
 				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
 				{created_at}{' '}
-				(ID: <span class="uid" style={{backgroundColor}}>{uid}</span>) 
+				(ID: <span class="uid" style={{backgroundColor}} onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
 				<a id ={address}> No.{address} </a>
 				{replies && replies.map(reply => {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight} />

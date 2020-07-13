@@ -21,6 +21,7 @@ class Thread extends Component {
 	this.linkReply = this.linkReply.bind(this); 
 	this.highlight = this.highlight.bind(this);
 	this.thread = this.thread.bind(this);
+	this.markUsersPosts = this.markUsersPosts.bind(this);
 	}
 
 	componentDidMount() {
@@ -83,6 +84,7 @@ class Thread extends Component {
 						{...post} 
 						linkReply={this.linkReply.bind(this, post.address)} 
 						highlight={this.highlight}
+						markUsersPosts={this.markUsersPosts}
 						thread={this.thread}
 
 					/>
@@ -194,6 +196,25 @@ class Thread extends Component {
 				}
 			}
 			return false
+		}
+	}
+	markUsersPosts(uid) {
+		let {posts} = this.state;
+		mark(posts);
+		this.setState({posts});
+		function mark(arr){
+			for (let i = 0; i < arr.length; i++) {
+				if (arr[i].uid == uid) {
+					arr[i].marked = !arr[i].marked
+				}
+				else {
+					arr[i].marked = false;
+				}
+				if (arr[i].children) {
+					mark(arr[i].children);
+				}
+			}
+
 		}
 	}
 }

@@ -57,12 +57,14 @@ class Thread extends Component {
 			return <div>Loading ... </div>
 		}
 		else if (head) {
+			let users = {};
+			this.countUsersPosts(posts, users);
 			return (
 				<div>
 					<Header toggleGallery={this.toggleGallery}/>
 					<h2>{head.subject}</h2>
 					{head.archived && <span>archived icon</span>}
-					{this.threadPosts(posts)}
+					{this.threadPosts(posts, users)}
 					<Form thread_id={head.thread_id} link={formLink} linkForm={this.linkForm}/>
 					{showGallery && <Gallery 
 						images={images} 
@@ -77,7 +79,7 @@ class Thread extends Component {
 			return <div>404: Not Found</div>
 		}
 	}
-	threadPosts(posts) {
+	threadPosts(posts, users) {
 		return posts.map(post => {
 			return  (
 				<div>
@@ -88,16 +90,31 @@ class Thread extends Component {
 						highlight={this.highlight}
 						markUsersPosts={this.markUsersPosts}
 						linkForm={this.linkForm}
+						postCount={users[post.uid]}
 						thread={this.thread}
 
 					/>
 					{post.children && 
 					<div className="replies">
-						{this.threadPosts(post.children)}
+						{this.threadPosts(post.children, users)}
 					</div>}
 				</div>
 		)
 		});
+	}
+	countUsersPosts(posts, users) {
+		for (let i = 0; i < posts.length; i++) {
+			if (!users[posts[i].uid]){
+				users[posts[i].uid] = 1;
+			}
+			else {
+				users[posts[i].uid] += 1;
+			}
+			if (posts[i].children) {
+				this.countUsersPosts(posts[i].children, users);
+			}
+		}
+		return users;
 	}
 	linkReply(reply, parent){
 		let {posts} = this.state;

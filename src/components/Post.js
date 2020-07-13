@@ -46,7 +46,7 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, created_at, address, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
+		const {image, archived, thread_id, name, created_at, address, postCount, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
 		const {text, parents} = this.state;
 		if (parents.length === 1) {
 			this.props.thread(parents[0], address);
@@ -60,7 +60,7 @@ class Post extends Component {
 				{name || 'Anonymous'}{' '} 
 				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
 				{created_at}{' '}
-				(ID: <span class="uid" style={{backgroundColor}} onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
+				(ID: <span class="uid" style={{backgroundColor}} title={`${postCount} post${postCount > 1 ? 's' : ''} by this ID`} onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
 				<a id ={address} className="address" onClick={linkForm.bind(this, address)}> No.{address} </a>
 				{replies && replies.map(reply => {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight}/>

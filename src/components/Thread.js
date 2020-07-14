@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import io from "socket.io-client";
 import Header from './Header';
 import Post from './Post';
 import Form from './Form';
@@ -27,7 +28,8 @@ class Thread extends Component {
 	}
 
 	componentDidMount() {
-		const {id} = this.props.match.params; 
+		const {id} = this.props.match.params;
+
 		fetch(`/api/threads/${id}`)
 		.then(res => res.json())
 		.then(data => {
@@ -46,6 +48,17 @@ class Thread extends Component {
 					return images;
 				},[])})
 		}).catch(error => this.setState({error}));
+
+		const socket = io('http://localhost:8080');
+		socket.on('connect', (test) => {
+			socket.emit('subscribe',id)
+			socket.on('new post', post => {
+				let {posts} = this.state;
+				console.log(post);
+				posts.push(post);
+				this.setState({posts});
+ 			});
+		});
 	}
 	render() {
 		const {isLoaded, error, posts, showGallery, current, images, formLink} = this.state

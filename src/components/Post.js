@@ -60,8 +60,16 @@ class Post extends Component {
 				{name || 'Anonymous'}{' '} 
 				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
 				{created_at}{' '}
-				(ID: <span class="uid" style={{backgroundColor}} title={`${postCount} post${postCount > 1 ? 's' : ''} by this ID`} onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
-				<a id ={address} className="address" onClick={linkForm.bind(this, address)}> No.{address} </a>
+				(ID: <span 
+						class="uid" 
+						style={{backgroundColor}} 
+						title={`${postCount} post${postCount > 1 ? 's' : ''} by this ID`} 
+						onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
+				<a 
+					id ={address} 
+					className="address" 
+					title="Reply to this post" 
+					onClick={linkForm.bind(this, address)}> No.{address} </a>
 				{replies && replies.map(reply => {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight}/>
 				 })}

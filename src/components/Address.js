@@ -4,7 +4,11 @@ class Address extends Component {
 	render() {
 		const {to, highlight} = this.props;
 		return (
-			<a href={`#${to}`} onMouseOver={highlight.bind(this, to, true)} onMouseOut={highlight.bind(this, to, false)}>>>{to}</a>
+			<a 
+				href={`#${to}`} 
+				onMouseOver={highlight.bind(this, to, true)} 
+				onMouseOut={highlight.bind(this, to, false)}
+			>>>{to}</a>
 		)
 	}
 }

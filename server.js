@@ -3,14 +3,16 @@
 const express = require('express'),
 	app = express(),
 	path = require('path'),
-	multer = require("multer"),
+	multer = require("multer"),	
 	methodOverride = require('method-override'),
 	knex = require('./db/knex'),
 	fs = require('fs-extra'),
 	bcrypt = require('bcrypt'),
 	filesize = require('filesize'),
 	sizeOf = require('image-size'),
-	imageThumbnail = require('image-thumbnail')
+	imageThumbnail = require('image-thumbnail'),
+	server = require('http').createServer(app),
+	io = require('socket.io')(server),
 	port = process.env.PORT || 3000,
 	charLimit = 500,
 	saltRounds = 10;
@@ -53,6 +55,20 @@ const upload = multer({
 	storage,
   	fileFilter,
   	limits
+});
+
+io.on('connect', socket => {
+	console.log('Client connected');
+	socket.on('subscribe', threadID => {
+		socket.join(threadID);
+	});
+	socket.on('unsubscribe', threadID => {
+		socket.leave(threadID);
+	});
+});
+
+io.on('disconect', () => {
+	console.log('Client disconnected');
 });
 
 app.get('/api/threads', (req, res) => {
@@ -163,11 +179,21 @@ app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
 			knex('posts').insert({...post}).then(resp => {
 				curAddress++;
 				if (req.file) {
-					imageThumbnail(`./dist/images/${req.params.id}/(${curAddress})${req.file.originalname}`)
+					let path = `./dist/images/${req.params.id}/(${curAddress})${req.file.originalname}`;
+					imageThumbnail(path)
 					.then(thumbnail => {
+						let options = {
+							percentage: 10,
+							jpegOptions: {force: true}
+						}
+						post.dimensions = sizeOf(path);
+						let bytes = fs.statSync(path).size;
+						post.filesize = filesize(bytes);
 						let thumbPath  =`./dist/images/${req.params.id}/thumb(${curAddress})${req.file.originalname}.jpg`;
 						fs.writeFile(thumbPath, thumbnail);
-					})
+						io.to(req.params.id).emit('new post', post);
+					});
+
 				}
 				res.status(201).end();
 
@@ -189,6 +215,7 @@ function newId(){
  app.get('*', (req, res) => {
  	res.sendFile(path.join(__dirname, 'dist', 'index.html'));
  })
-app.listen(port, () => {
+
+server.listen(port, () => {
 	console.log(`Serving on port ${port}...`);
 });

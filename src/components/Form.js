@@ -87,7 +87,7 @@ class Form extends Component {
 		let charLimit = 500;
 		if (content.length > charLimit) overLimit = true;
 		if (!open) {
-			return <img className="create-post" src={`./../images/assets/create_icon.png`} onClick={this.handleClick}/>
+			return <img className="create-post" title="Reply to this thread" src={`./../images/assets/create_icon.png`} onClick={this.handleClick}/>
 		}
 		return (
 			<div className="new-post-form">

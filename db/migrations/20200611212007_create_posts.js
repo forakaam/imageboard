@@ -5,7 +5,6 @@ exports.up = function(knex) {
 		table.text('content');
 		table.string('IP');
 		table.string('name');
-		table.string('image');
 		table.string('uid');
 		table.string('tripcode');
 		table.boolean('head');

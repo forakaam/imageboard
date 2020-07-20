@@ -10,7 +10,6 @@ exports.seed = function(knex) {
           address: '25191103',
           content: 'Post unsettling images',
           IP: '69.89.31.226',
-          image: '1591692573308.jpg',
           uid: '0Q9KWGq4',
           head: true,
           created_at: new Date(new Date().getTime() + 900000000),
@@ -21,7 +20,6 @@ exports.seed = function(knex) {
           content: '>>25191103  Creepy!',
           IP: '69.89.31.225',
           uid: 'fzhJEp66',
-          image: '1591702978091.jpg',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 1
@@ -30,7 +28,6 @@ exports.seed = function(knex) {
           content: '',
           IP: '69.89.31.226',
           uid: '0Q9KWGq4',
-          image: '1591724924905.jpg',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 1
@@ -45,7 +42,6 @@ exports.seed = function(knex) {
           >Negatives:`,
           IP: '69.89.31.226',
           uid: '0Q9KWGq4',
-          image: '1591854487873.jpg',
           head: true,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -60,7 +56,6 @@ exports.seed = function(knex) {
           Not that fucked. Could be A LOT worse.`,
           IP: '69.89.31.225',
           uid: 'fzhJEp66',
-          image: '1591854971169.jpg',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -73,7 +68,6 @@ exports.seed = function(knex) {
           Idk seems like a net positive just because of food security except for the fact that I don't want to leave parents and gf );`,
           IP: '69.89.31.233',
           uid: 'XKT4sFEc',
-          image: '1591855004718.png',
           head: false,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 2
@@ -105,7 +99,6 @@ exports.seed = function(knex) {
           Why do people say this? He also conveyed incredible emotion and had an amazing scream.`,
           IP: '69.89.31.226',
           uid: '0Q9KWGq4',
-          image: '1591921503473.gif',
           head: true,
           created_at: new Date(new Date().getTime() + 900000000),
           thread_id: 3

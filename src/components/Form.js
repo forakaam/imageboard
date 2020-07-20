@@ -11,6 +11,7 @@ class Form extends Component {
 			name: '',
 			content: '',
 			subject: '',
+			files: [],
 			links: []
 		}
 		this.node = React.createRef();
@@ -18,6 +19,7 @@ class Form extends Component {
     	this.handleChange = this.handleChange.bind(this);
     	this.handleSubmit = this.handleSubmit.bind(this);
     	this.resetState = this.resetState.bind(this);
+    	this.handleUpload = this.handleUpload.bind(this);
 
 	}
 	handleChange(e) {
@@ -26,10 +28,12 @@ class Form extends Component {
 		});
 	}
 	handleSubmit(e) {
-		const {thread, name, content, subject} = this.state;
+		const {thread, name, content, subject, files} = this.state;
 		e.preventDefault();
 		let form = new FormData()
-		form.append('image', this.node.current.files[0]);
+		for (let i = 0; i < files.length; i++){
+			form.append('images', files[i]);
+		}
 		form.append('content', content);
 		form.append('subject', subject);
 		form.append('name', name);
@@ -59,6 +63,9 @@ class Form extends Component {
 	handleClick(e) {
 		this.setState({open:true});
 	}
+	handleUpload() {
+		this.setState({files: this.node.current.files});
+	}
 	resetState(){
 		this.props.linkForm('');
 		this.setState({
@@ -67,13 +74,14 @@ class Form extends Component {
 			thread: this.props.thread_id,
 			subject: '',
 			name: '',
+			files: [],
 			links: []
 
 		});
 	}
 	render() {
 		let {thread_id, link} = this.props;
-		let {open, thread, name, content, subject, links} = this.state;
+		let {open, files, thread, name, content, subject, links} = this.state;
 		if (link && !links.includes(link)) {
 			if (content) {
 				content += '\n';
@@ -83,9 +91,10 @@ class Form extends Component {
 			this.setState({content, links, open:true});
 
 		}
-		let overLimit = false;
 		let charLimit = 500;
-		if (content.length > charLimit) overLimit = true;
+		let fileLimit = 5;
+		let tooManyChars = content.length > charLimit;
+		let tooManyFiles = files.length > fileLimit;
 		if (!open) {
 			return <img className="create-post" title="Reply to this thread" src={`./../images/assets/create_icon.png`} onClick={this.handleClick}/>
 		}
@@ -103,11 +112,12 @@ class Form extends Component {
 					</div>
 					<div>
 						<textarea placeholder="Comment" name="content" value={content} onChange={this.handleChange}/>
-						<span className={overLimit ? 'invalid subtext' : 'subtext'}>Character Limit: {content.length}/{charLimit}</span>
+						<span className={tooManyChars ? "invalid subtext" : "subtext"}>Character Limit: {content.length}/{charLimit}</span>
+						{tooManyFiles && <span className="invalid subtext">{' '}File Limit: {fileLimit}</span>}
 					</div>
 					<div>
-						<input type="file" name="image" accept=".jpg, .jpeg, .png, .gif" ref={this.node}/>
-						<input type="submit" name="submit" />
+						<input type="file" title={`Limit: ${fileLimit}`} name="image" accept=".jpg, .jpeg, .png, .gif" ref={this.node} multiple="true" onChange={this.handleUpload}/>
+						<input type="submit" name="submit" disabled={tooManyFiles || tooManyChars}/>
 					</div>
 				</form>
 			</div>

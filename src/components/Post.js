@@ -46,7 +46,7 @@ class Post extends Component {
 
 	}
 	render() {
-		const {image, archived, thread_id, name, created_at, address, postCount, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
+		const {images, archived, thread_id, name, created_at, address, postCount, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
 		const {text, parents} = this.state;
 		if (parents.length === 1) {
 			this.props.thread(parents[0], address);
@@ -74,7 +74,19 @@ class Post extends Component {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight}/>
 				 })}
 			</div>
-			{image && <Image filename ={image} address={address} filesize={filesize} dimensions={dimensions} thread_id={thread_id}/>}
+			{images && 
+				<div className="thumbnail-box">
+					{images.map(image => {
+					return <Image 
+						filename ={image.filename} 
+						address={address} 
+						filesize={image.filesize} 
+						width={image.width} 
+						height={image.height} 
+						thread_id={thread_id}/>
+					})}
+				</div>
+			}
 			<div>{text}</div>
 		</div>
 		return (

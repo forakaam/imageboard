@@ -4,15 +4,19 @@ import '../styles/preview.css';
 
 class Preview extends Component {
 	render() {
-		const {thread_id, image, images, subject, address, content, replies, created_at} = this.props;
+		const {id, subject, counts, head} = this.props;
 		return (
 			<div className="preview">
-				<Link to={`/threads/${thread_id}`}>
-					<img src={`../../images/${thread_id}/thumb(${address})${image}.jpg`} className="thumbnail-display"/>
+				<Link to={`/threads/${id}`}>
+					{head.images &&
+					<img 
+						src={`../../images/${id}/thumb(${head.address})${head.images[0].filename}.jpg`} 
+						className="thumbnail-display"/>
+					}
 				</Link>
-				<div>Replies: {replies}/ Images: {images}/ Created: {new Date(created_at).toLocaleString()}</div>
+				<div>Replies: {counts.replies}/ Images: {counts.images}/ Created: {new Date(head.created_at).toLocaleString()}</div>
 				<h2 className="subject">{subject}</h2>
-				<div className="content">{content}</div>
+				<div className="content">{head.content}</div>
 			</div>
 		)
 	}

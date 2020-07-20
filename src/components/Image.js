@@ -9,7 +9,7 @@ class Image extends Component {
 		}
 	}
 	render() {
-		const {filename, filesize, address, dimensions, thread_id} = this.props;
+		const {filename, filesize, address, width, height, thread_id} = this.props;
 		const {open} = this.state;
 		let img;
 		if (open) {
@@ -32,7 +32,7 @@ class Image extends Component {
 					<img src={`./../images/assets/download_icon.png`} className="download-icon"/>
 				</a>
 				{' '}
-				({filesize}, {dimensions.width}x{dimensions.height})
+				({filesize}, {width}x{height})
 				{' '} 
 				<a href={`https://www.google.com/searchbyimage?&image_url=${process.env.BASE_URL}/${thread_id}/${filename}&safe=off`}>google</a>
 				</div>

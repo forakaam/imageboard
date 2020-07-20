@@ -10,6 +10,7 @@ class Thread extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			images: [],
 			isLoaded: false,
 			posts: [],
 			error: null,
@@ -18,13 +19,14 @@ class Thread extends Component {
 			formLink: ''
 
 		}
-	this.toggleGallery = this.toggleGallery.bind(this);
-	this.changeImage = this.changeImage.bind(this);
-	this.linkReply = this.linkReply.bind(this); 
-	this.linkForm = this.linkForm.bind(this); 
-	this.highlight = this.highlight.bind(this);
-	this.thread = this.thread.bind(this);
-	this.markUsersPosts = this.markUsersPosts.bind(this);
+		this.socket = io('http://localhost:8080');
+		this.toggleGallery = this.toggleGallery.bind(this);
+		this.changeImage = this.changeImage.bind(this);
+		this.linkReply = this.linkReply.bind(this); 
+		this.linkForm = this.linkForm.bind(this); 
+		this.highlight = this.highlight.bind(this);
+		this.thread = this.thread.bind(this);
+		this.markUsersPosts = this.markUsersPosts.bind(this);
 	}
 
 	componentDidMount() {
@@ -34,35 +36,63 @@ class Thread extends Component {
 		.then(res => res.json())
 		.then(data => {
 			this.setState({
-				posts: data, 
+				posts: data.posts, 
 				isLoaded: true, 
-				images: data.reduce((images, post) => {
-					if (post && post.image) {
-						images.push({
-							filename: post.image, 
-							address: post.address,
-							dimensions: post.dimensions,
-							filesize: post.filesize
-						});
-					}
-					return images;
-				},[])})
+				images: data.images
+			})
 		}).catch(error => this.setState({error}));
 
-		const socket = io('http://localhost:8080');
-		socket.on('connect', (test) => {
-			socket.emit('subscribe',id)
-			socket.on('new post', post => {
-				let {posts} = this.state;
-				console.log(post);
+
+		this.socket.on('connect', (test) => {
+			this.socket.emit('subscribe',id)
+			this.socket.on('new post', post => {
+				let {images, posts} = this.state;
 				posts.push(post);
-				this.setState({posts});
+				if (post.image) {
+					images.push({
+						filename: post.image, 
+						address: post.address,
+						dimensions: post.dimensions,
+						filesize: post.filesize
+					});
+				}
+				this.setState({images, posts});
  			});
 		});
+	}
+	countPosts(posts){
+		let users = [];
+		let counts = {
+			images: 0,
+			posts: 0,
+			users: 0
+		}
+		helper(posts);
+		return counts;
+		function helper(arr) {
+			for (let i = 0; i < arr.length; i ++) {
+				counts.posts ++;
+				if (arr[i].images) {
+					counts.images += arr[i].images.length;
+				}
+				if (!users.includes(arr[i].uid)){
+					users.push(arr[i].uid);
+					counts.users ++;
+				}
+				if (arr[i].children){
+					helper(arr[i].children);
+				}
+			}
+
+		}
+	}
+	componentWillUnmount() {
+		this.socket.emit('unsubscribe', this.props.match.params);
 	}
 	render() {
 		const {isLoaded, error, posts, showGallery, current, images, formLink} = this.state
 		let head = posts[0];
+		let counts = this.countPosts(posts);
 		if (error) {
 			return <div>Error: {error}</div>
 		}
@@ -74,7 +104,7 @@ class Thread extends Component {
 			this.countUsersPosts(posts, users);
 			return (
 				<div>
-					<Header toggleGallery={this.toggleGallery}/>
+					<Header toggleGallery={this.toggleGallery} counts={counts}/>
 					<h2>{head.subject}</h2>
 					{head.archived && <span>archived icon</span>}
 					{this.threadPosts(posts, users)}
@@ -182,7 +212,8 @@ class Thread extends Component {
 			if (prevTop > 0 && prevTop < curTop) return prev;
 			else return cur;
 		});
-		this.setState({showGallery: !this.state.showGallery, current: topImage.address})
+		this.changeImage(topImage.address)
+		this.setState({showGallery: !this.state.showGallery})
 	}
 	changeImage(address){
 		let posts = this.state.posts.map(post => {

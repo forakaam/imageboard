@@ -16,13 +16,15 @@ class Catalog extends Component {
 		.then(res => res.json())
 		.then(data => {
 			this.setState({
-				threads: data,
+				threads: data.threads,
+				heads: data.heads,
+				counts: data.counts,
 				isLoaded: true
 			})
 		}).catch(error => this.setState({error}));
 	}
 	render(){
-		const {isLoaded, threads, error} = this.state;
+		const {isLoaded, threads, heads, counts, error} = this.state;
 		if (error) {
 			return <div>Error: {error.message}</div>
 		} else if (!isLoaded) {
@@ -31,7 +33,9 @@ class Catalog extends Component {
 		else {
 			return (
 				<div>
-					{threads.map(thread => <Preview key={thread.thread_id} {...thread}/>)}
+					{threads.map(thread => {
+						return <Preview key={thread.id} {...thread} counts={counts[thread.id]} head={heads[thread.id]}/>
+					})}
 					<Form/>
 				</div>
 			);

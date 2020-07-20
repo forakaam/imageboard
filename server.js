@@ -49,6 +49,7 @@ const storage = multer.diskStorage({
     }
 });
 const limits = {
+	files: 5,
 	fileSize: 1024 * 1024 * 3
 };
 const upload = multer({
@@ -72,38 +73,64 @@ io.on('disconect', () => {
 });
 
 app.get('/api/threads', (req, res) => {
-	knex('threads').select('posts.thread_id', 'image', 'name', 'address', 'tripcode', 'images', 'subject', 'content', 'replies', 'created_at', 'uid').join(
-		knex('posts').count({ replies: 'id'}).count({images: knex.raw('case when image is not null then 1 end')})
-		.select('thread_id').groupBy('thread_id').as('replies'), 'replies.thread_id', '=', 'threads.id')
-	.join('posts', 'posts.thread_id', '=', 'threads.id').where('head', true)
-	.then(data => res.json(data))
+	knex('threads').select('id','subject').where('archived', false)
+	.then(threads => {
+		knex('posts').select('name', 'tripcode', 'address', 'content', 'id', 'created_at', 'thread_id', 'head').whereIn('thread_id', threads.map(thread => thread.id))
+		.then(posts => {
+			knex('images').select('filename','post_id').whereIn('post_id', posts.map(post => post.id))
+			.then(images => {
+				let counts = {};
+				let heads = {};
+				threads.forEach(thread => {
+					counts[thread.id] = {replies: 0, images: 0}
+				});
+				for (let i = 0; i < posts.length; i++) {
+					counts[posts[i].thread_id].replies++;
+					if (posts[i].head) {
+						heads[posts[i].thread_id] = posts[i];
+					}
+				}
+				for (let i = 0; i < images.length; i++) {
+					let post = posts.find(post => post.id == images[i].post_id);
+					counts[post.thread_id].images++;
+					if (post.head) {
+						if (!heads[post.thread_id].images) {
+							heads[post.thread_id].images = [];
+						}
+						heads[post.thread_id].images.push(images[i]);
+					}
+				}
+				res.json({threads, counts, heads});
+			});
+		});
+	})
 	.catch(err => res.status(500).send('Database Error'));
 });
 
 app.get('/api/threads/:id', (req, res) => {
-	knex('threads').select('posts.id','thread_id', 'image', 'name', 'subject', 'content', 'tripcode', 'created_at', 'archived', 'address', 'uid')
-	.join('posts', 'posts.thread_id', '=', 'threads.id').where('threads.id', req.params.id)
-	.then(data => {
-		data = data.map(item => {
-			if (item.image) {
-				let path = `./dist/images/${item.thread_id}/(${item.address})${item.image}`;
-				let options = {
-					percentage: 10,
-					jpegOptions: {force: true}
+	knex('threads').select('posts.id','thread_id', 'name', 'subject', 'content', 'tripcode', 'created_at', 'archived', 'address', 'uid')
+	.join('posts', 'posts.thread_id', '=', 'threads.id').where('threads.id', req.params.id).orderBy('posts.id')
+	.then(posts => {
+		knex('images').select('filename', 'filesize', 'width', 'height', 'post_id').whereIn('post_id',posts.map(post=> post.id)).then(images => {
+			for (let i = 0; i < images.length; i++) {
+				let j = posts.findIndex(post => post.id == images[i].post_id);
+				if (!posts[j].images) {
+					posts[j].images = [];
 				}
-				let dimensions = sizeOf(path);
-				let bytes = fs.statSync(path).size;
-				item.filesize = filesize(bytes);
-				item.dimensions = sizeOf(path);
+				posts[j].images.push({
+					filename: images[i].filename, 
+					filesize: images[i].filesize, 
+					width: images[i].width, 
+					height: images[i].height});
+				images[i].address = posts[j].address
 			}
-			return item;
-		});
-		res.json(data);
+			res.json({posts,images});
+		});	
 	})
 	.catch(err => res.status(500).send(err));
 });
 
-app.post('/api/threads/new', upload.single('image'), (req, res) => {
+app.post('/api/threads/new', upload.array('images', 5), (req, res) => {
 
 	let {subject, content, name} = req.body;
 	let tripcode = /(.*)#(.*)/;
@@ -120,26 +147,43 @@ app.post('/api/threads/new', upload.single('image'), (req, res) => {
 		let post = {
 			content: content == 'undefined' ? '' : content,
 			name,
-			image: req.file ? req.file.originalname : null,
 			created_at: new Date(),
 			IP: req.ip,
 			tripcode: hash,
 			address: curAddress + 1,
 			uid: newId()
 		};
-		knex('threads').insert({subject}).returning('id').then(ids	=> {
-			knex('posts').insert({thread_id: ids[0], head: true, ...post}).returning('thread_id').then(thread_ids => {
+		knex('threads').insert({subject, archived: false}).returning('id').then(thread_ids	=> {
+			knex('posts').insert({thread_id: thread_ids[0], head: true, ...post}).returning('id').then(post_ids => {
 				curAddress++;
-				if (req.file) {
-					let path = `./dist/images/${thread_ids[0]}`;
-					fs.mkdirsSync(path);
-					fs.renameSync(`./dist/images/temp/(${curAddress})${req.file.originalname}`,`${path}/(${curAddress})${req.file.originalname}`);
-					imageThumbnail(`${path}/(${curAddress})${req.file.originalname}`)
-					.then(thumbnail => {
-						let thumbPath  =`${path}/thumb(${curAddress})${req.file.originalname}.jpg`;
-						fs.writeFileSync(thumbPath, thumbnail);
-						res.json(thread_ids[0]);
-					})
+				if (req.files) {
+					let count = 0;
+					let folder = `./dist/images/${thread_ids[0]}`;
+					fs.mkdirsSync(folder);
+					for (let i = 0; i < req.files.length; i++) {
+						let path = `${folder}/(${curAddress})${req.files[i].originalname}`
+						fs.renameSync(`./dist/images/temp/(${curAddress})${req.files[i].originalname}`, path);
+						imageThumbnail(path)
+						.then(thumbnail => {
+							let thumbPath  =`${folder}/thumb(${curAddress})${req.files[i].originalname}.jpg`;
+							fs.writeFileSync(thumbPath, thumbnail);
+							let image = {
+								filename: req.files[i].originalname,
+								post_id: post_ids[0]
+							}
+							let bytes = req.files[i].size;
+							image.filesize = filesize(bytes);
+							let dimensions = sizeOf(path);
+							image.height = dimensions.height;
+							image.width = dimensions.width;
+							knex('images').insert(image).returning('id').then(image_ids => {
+								count++;
+								if (count == req.files.length) {
+									res.json(thread_ids[0]);
+								}
+							}); 
+						});
+					}
 				}
 				else {
 					res.json(thread_ids[0]);
@@ -149,7 +193,7 @@ app.post('/api/threads/new', upload.single('image'), (req, res) => {
 	}
 });
 
-app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
+app.post('/api/threads/:id/new', upload.array('images', 5), (req, res) => {
 	let {subject, content, name} = req.body; 
 	let tripcode = /(.*)#(.*)/;
 	let hash = null; 
@@ -172,27 +216,37 @@ app.post('/api/threads/:id/new', upload.single('image'), (req, res) => {
 				tripcode: hash,
 				uid: match ? match.uid : newId(),
 				IP: req.ip,
-				image: req.file ? req.file.originalname : null,
 				created_at: new Date(),
 				address: curAddress + 1
 			};
-			knex('posts').insert({...post}).then(resp => {
+			knex('posts').insert(post).returning('id').then(post_ids => {
 				curAddress++;
-				if (req.file) {
-					let path = `./dist/images/${req.params.id}/(${curAddress})${req.file.originalname}`;
-					imageThumbnail(path)
-					.then(thumbnail => {
-						let options = {
-							percentage: 10,
-							jpegOptions: {force: true}
-						}
-						post.dimensions = sizeOf(path);
-						let bytes = fs.statSync(path).size;
-						post.filesize = filesize(bytes);
-						let thumbPath  =`./dist/images/${req.params.id}/thumb(${curAddress})${req.file.originalname}.jpg`;
-						fs.writeFile(thumbPath, thumbnail);
-						io.to(req.params.id).emit('new post', post);
-					});
+				if (req.files) {
+					post.images = [];
+					for (let i = 0; i < req.files.length; i++) {
+						let path = `./dist/images/${req.params.id}/(${curAddress})${req.files[i].originalname}`;
+						imageThumbnail(path)
+						.then(thumbnail => {
+							let thumbPath  =`./dist/images/${req.params.id}/thumb(${curAddress})${req.files[i].originalname}.jpg`;
+							fs.writeFile(thumbPath, thumbnail);
+							let image = {
+								filename: req.files[i].originalname,
+								post_id: post_ids[0]
+							}
+							let bytes = req.files[i].size;
+							image.filesize = filesize(bytes);
+							let dimensions = sizeOf(path);
+							image.height = dimensions.height;
+							image.width = dimensions.width;
+							knex('images').insert(image).returning('id').then(image_ids => {
+								post.images.push(image)
+								if (post.images.length == req.files.length) {
+									io.to(req.params.id).emit('new post', post);
+								}
+							}); 
+			
+						});
+					}
 
 				}
 				res.status(201).end();

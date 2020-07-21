@@ -19,12 +19,14 @@ class Gallery extends Component {
 	render() {
 		const {current, images, thread_id, changeImage, toggleGallery} = this.props; 
 		let thumbnails = images.map(image => {
-			return (
-				<img 
-					src={`./../images/${thread_id}/thumb(${image.address})${image.filename}.jpg`}			
-					onClick={changeImage.bind(this, image.address)}
-					className={image.address == current ? "current gallery-thumbnail" : "gallery-thumbnail"} />
-			)
+			if (!image.hide) {
+				return (
+					<img 
+						src={`./../images/${thread_id}/thumb(${image.address})${image.filename}.jpg`}			
+						onClick={changeImage.bind(this, image.address)}
+						className={image.address == current ? "current gallery-thumbnail" : "gallery-thumbnail"} />
+				)				
+			}
 		})
 		let image = images.find(image => image.address == current);
 		return (

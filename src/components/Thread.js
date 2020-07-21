@@ -27,6 +27,7 @@ class Thread extends Component {
 		this.highlight = this.highlight.bind(this);
 		this.thread = this.thread.bind(this);
 		this.markUsersPosts = this.markUsersPosts.bind(this);
+		this.hidePost = this.hidePost.bind(this);
 	}
 
 	componentDidMount() {
@@ -135,6 +136,7 @@ class Thread extends Component {
 						linkForm={this.linkForm}
 						postCount={users[post.uid]}
 						thread={this.thread}
+						hidePost={this.hidePost}
 
 					/>
 					{post.children && 
@@ -207,13 +209,17 @@ class Thread extends Component {
 	toggleGallery(){
 		//not the react way to find top element, should refactor
 		let topImage = this.state.images.reduce((prev, cur) => {
+			if (prev.hide) return cur;
+			if (cur.hide) return prev;
 			let prevTop = document.getElementById(prev.address).getBoundingClientRect().top;
 			let curTop = document.getElementById(cur.address).getBoundingClientRect().top;
 			if (prevTop > 0 && prevTop < curTop) return prev;
 			else return cur;
 		});
-		this.changeImage(topImage.address)
-		this.setState({showGallery: !this.state.showGallery})
+		if (!topImage || !topImage.hide){
+			this.changeImage(topImage.address)
+			this.setState({showGallery: !this.state.showGallery})
+		}
 	}
 	changeImage(address){
 		let posts = this.state.posts.map(post => {
@@ -279,6 +285,47 @@ class Thread extends Component {
 				}
 			}
 
+		}
+	}
+	hidePost(address, shouldHide) {
+		let {posts, images} = this.state;
+		helper(posts, images);
+		this.setState({posts, images});
+		function helper(posts, images) {
+			for (let i = 0; i < posts.length; i++) {
+				if (posts[i].address == address) {
+					posts[i].collapse = shouldHide;
+					if (posts[i].images){
+						for (let j = 0; j < images.length; j++) {
+							if (images[j].address == address) {
+								images[j].hide = shouldHide;
+							}
+						}
+					}
+					if (posts[i].children) {
+						hide(posts[i].children, images, shouldHide)
+					}
+					return;
+				}
+				else if (posts[i].children) {
+					helper(posts[i].children);
+				}
+			}
+		}
+		function hide(posts, images, shouldHide) {
+			for (let i = 0; i < posts.length; i++) {
+				posts[i].hide = shouldHide;
+				if (posts[i].images){
+					for (let j = 0; j < images.length; j++) {
+						if (images[j].address == posts[i].address) {
+							images[j].hide = shouldHide;
+						}
+					}
+				}
+				if (posts[i].children) {
+					hide(posts.children, shouldHide);
+				}
+			}
 		}
 	}
 	linkForm(address) {

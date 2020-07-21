@@ -46,7 +46,7 @@ class Post extends Component {
 
 	}
 	render() {
-		const {images, archived, thread_id, name, created_at, address, postCount, filesize, dimensions, replies, highlight, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
+		const {images, archived, thread_id, name, collapse, created_at, address, postCount, filesize, dimensions, replies, highlight, hidePost, hide, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
 		const {text, parents} = this.state;
 		if (parents.length === 1) {
 			this.props.thread(parents[0], address);
@@ -57,6 +57,9 @@ class Post extends Component {
 		let backgroundColor = this.colorId(uid);
 		let post = 	<div ref={this.node} className={marked ? 'marked' : 'post'}>		
 			<div className="header">
+				{!collapse && <span onClick={hidePost.bind(this, address, true)}>[-]</span> }
+				{collapse && <span onClick={hidePost.bind(this, address, false)}>[+]</span> }
+				{' '}
 				{name || 'Anonymous'}{' '} 
 				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
 				{created_at}{' '}
@@ -74,24 +77,26 @@ class Post extends Component {
 					return <Address key={`${reply}${this.props.address}`}to={reply} highlight={highlight}/>
 				 })}
 			</div>
-			{images && 
-				<div className="thumbnail-box">
-					{images.map(image => {
-					return <Image 
-						filename ={image.filename} 
-						address={address} 
-						filesize={image.filesize} 
-						width={image.width} 
-						height={image.height} 
-						thread_id={thread_id}/>
-					})}
-				</div>
-			}
-			<div>{text}</div>
+			{!collapse && <div>
+				{images && 
+					<div className="thumbnail-box">
+						{images.map(image => {
+						return <Image 
+							filename ={image.filename} 
+							address={address} 
+							filesize={image.filesize} 
+							width={image.width} 
+							height={image.height} 
+							thread_id={thread_id}/>
+						})}
+					</div>
+				}
+				<div>{text}</div>
+			</div>}
 		</div>
 		return (
 			<div>
-				{<div className={isHovering ? 'highlight' : ''} > {post} </div>}
+				{!hide && <div className={isHovering ? 'highlight' : ''} > {post} </div>}
 				{isHovering && <div className="reply" style={{top: y, left: x}}>{post}</div>}
 			</div>
 		)

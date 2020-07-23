@@ -126,9 +126,8 @@ class Thread extends Component {
 	threadPosts(posts, users) {
 		return posts.map(post => {
 			return  (
-				<div>
-					<Post 
-						key={post.id} 
+				<div key={'post' + post.id}>
+					<Post  
 						{...post} 
 						linkReply={this.linkReply.bind(this, post.address)} 
 						highlight={this.highlight}
@@ -140,7 +139,7 @@ class Thread extends Component {
 
 					/>
 					{post.children && 
-					<div className="replies">
+					<div className="replies" >
 						{this.threadPosts(post.children, users)}
 					</div>}
 				</div>

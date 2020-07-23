@@ -35,3 +35,9 @@ p {
 	flex-flow: row wrap;
 	/*justify-content: space-between;*/
 }
+.liked {
+	color: red;
+}
+.text {
+    white-space: pre-line;
+}

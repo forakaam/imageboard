@@ -77,30 +77,46 @@ app.get('/api/threads', (req, res) => {
 	.then(threads => {
 		knex('posts').select('name', 'tripcode', 'address', 'content', 'id', 'created_at', 'thread_id', 'head').whereIn('thread_id', threads.map(thread => thread.id))
 		.then(posts => {
-			knex('images').select('filename','post_id').whereIn('post_id', posts.map(post => post.id))
+			let post_ids = posts.map(post => post.id);
+			knex('images').select('filename','post_id').whereIn('post_id', post_ids)
 			.then(images => {
-				let counts = {};
-				let heads = {};
-				threads.forEach(thread => {
-					counts[thread.id] = {replies: 0, images: 0}
-				});
-				for (let i = 0; i < posts.length; i++) {
-					counts[posts[i].thread_id].replies++;
-					if (posts[i].head) {
-						heads[posts[i].thread_id] = posts[i];
-					}
-				}
-				for (let i = 0; i < images.length; i++) {
-					let post = posts.find(post => post.id == images[i].post_id);
-					counts[post.thread_id].images++;
-					if (post.head) {
-						if (!heads[post.thread_id].images) {
-							heads[post.thread_id].images = [];
+				knex('likes').select('IP','post_id').whereIn('post_id', post_ids)
+				.then(likes => {
+					let counts = {};
+					let heads = {};
+					threads.forEach(thread => {
+						counts[thread.id] = {replies: 0, images: 0}
+					});
+					for (let i = 0; i < posts.length; i++) {
+						counts[posts[i].thread_id].replies++;
+						if (posts[i].head) {
+							heads[posts[i].thread_id] = posts[i];
 						}
-						heads[post.thread_id].images.push(images[i]);
 					}
-				}
-				res.json({threads, counts, heads});
+					for (let j = 0; j < images.length; j++) {
+						let post = posts.find(post => post.id == images[j].post_id);
+						counts[post.thread_id].images++;
+						if (post.head) {
+							if (!heads[post.thread_id].images) {
+								heads[post.thread_id].images = [];
+							}
+							heads[post.thread_id].images.push(images[j]);
+						}
+					}
+					for (let k = 0; k < likes.length; k++) {
+						let post = posts.find(post => post.id == likes[k].post_id);
+						if (!post.likes) {
+							post.likes = 1;
+						}
+						else {
+							post.likes++;
+						}
+						if (likes[k].IP == req.ip) {
+							post.wasLiked = true;
+						}
+					}
+					res.json({threads, counts, heads});
+				});
 			});
 		});
 	})
@@ -111,20 +127,38 @@ app.get('/api/threads/:id', (req, res) => {
 	knex('threads').select('posts.id','thread_id', 'name', 'subject', 'content', 'tripcode', 'created_at', 'archived', 'address', 'uid')
 	.join('posts', 'posts.thread_id', '=', 'threads.id').where('threads.id', req.params.id).orderBy('posts.id')
 	.then(posts => {
-		knex('images').select('filename', 'filesize', 'width', 'height', 'post_id').whereIn('post_id',posts.map(post=> post.id)).then(images => {
-			for (let i = 0; i < images.length; i++) {
-				let j = posts.findIndex(post => post.id == images[i].post_id);
-				if (!posts[j].images) {
-					posts[j].images = [];
+		let post_ids = posts.map(post => post.id);
+		knex('images').select('id', 'filename', 'filesize', 'width', 'height', 'post_id').whereIn('post_id',post_ids).then(images => {
+			knex('likes').select('IP','post_id').whereIn('post_id', post_ids)
+			.then(likes => {
+				for (let i = 0; i < images.length; i++) {
+					let j = posts.findIndex(post => post.id == images[i].post_id);
+					if (!posts[j].images) {
+						posts[j].images = [];
+					}
+					posts[j].images.push({
+						filename: images[i].filename, 
+						filesize: images[i].filesize, 
+						width: images[i].width, 
+						height: images[i].height});
+					images[i].address = posts[j].address
 				}
-				posts[j].images.push({
-					filename: images[i].filename, 
-					filesize: images[i].filesize, 
-					width: images[i].width, 
-					height: images[i].height});
-				images[i].address = posts[j].address
-			}
-			res.json({posts,images});
+				for (let j = 0; j < likes.length; j++) {
+					let post = posts.find(post => post.id == likes[j].post_id);
+					if (!post.likes) {
+						post.likes = 1;
+					}
+					else {
+						post.likes++;
+					}
+					if (likes[j].IP == req.ip) {
+						post.wasLiked = true;
+					}
+				}
+	
+				res.json({posts,images});
+			});
+			
 		});	
 	})
 	.catch(err => res.status(500).send(err));
@@ -252,11 +286,34 @@ app.post('/api/threads/:id/new', upload.array('images', 5), (req, res) => {
 				res.status(201).end();
 
 			})
-		})
-		// .catch(err => res.status(500).send(err));
+		}).catch(err => res.status(500).send(err));
 	}
 });
-
+app.post('/api/threads/:thread_id/posts/:post_id/like', (req, res) => {
+	let like = {
+		post_id: req.params.post_id, 
+		IP: req.ip
+	};
+	knex('likes').select('*').where(like).then(likes => {
+		if (likes.length == 0) {
+			knex('likes').insert(like).returning('id').then(id => {
+				res.status(201).end();
+			})
+		}
+		else {
+			res.status(500).end();
+		}
+	}).catch(err => res.status(500).send(err));
+});
+app.delete('/api/threads/:thread_id/posts/:post_id/like', (req, res) => {
+	let like = {
+		post_id: req.params.post_id, 
+		IP: req.ip
+	};
+	knex('likes').where(like).del().returning('id').then(likes => {
+		res.status(201).end();
+	}).catch(err => res.status(500).send(err));
+});
 function newId(){
 	let length = 8;
 	let chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';

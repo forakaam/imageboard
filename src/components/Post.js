@@ -11,7 +11,9 @@ class Post extends Component {
 			text: this.props.content,
 			backgroundColor: '',
 			parents: [],
+			liked: this.props.wasLiked || false
 		};
+		this.like = this.like.bind(this);
 		this.node = React.createRef()
 	}
 	componentDidMount() {
@@ -39,35 +41,40 @@ class Post extends Component {
 		text = reactStringReplace(text, link, (match, i) => {
 			return <a href={match + i} key={match + i}>{match}</a>
 		});
-		text = reactStringReplace(text, paragraph, (match, i) => {
-			return <p key={match + i}>{match}</p> 
-		});
 		this.setState({text});
+		if (this.state.parents.length === 1) {
+			this.props.thread(this.state.parents[0], this.props.address);
+		}
 
 	}
 	render() {
-		const {images, archived, thread_id, name, collapse, created_at, address, postCount, filesize, dimensions, replies, highlight, hidePost, hide, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm} = this.props;
-		const {text, parents} = this.state;
-		if (parents.length === 1) {
-			this.props.thread(parents[0], address);
-		}
-		if (current){
+		const {images, archived, thread_id, name, collapse, created_at, address, postCount, filesize, dimensions, replies, likes, highlight, hidePost, hide, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm, thread} = this.props;
+		const {text, parents, liked} = this.state;
+		let curLikes = likes;
+		if (current) {
 			this.node.current.scrollIntoView();
+		}
+		if (liked && !this.props.wasLiked) {
+			curLikes++;
+		}
+		if (!liked && this.props.wasLiked) {
+			curLikes--;
 		}
 		let backgroundColor = this.colorId(uid);
 		let post = 	<div ref={this.node} className={marked ? 'marked' : 'post'}>		
 			<div className="header">
 				{!collapse && <span onClick={hidePost.bind(this, address, true)}>[-]</span> }
-				{collapse && <span onClick={hidePost.bind(this, address, false)}>[+]</span> }
-				{' '}
+				{collapse && <span onClick={hidePost.bind(this, address, false)}>[+]</span> }{' '}
 				{name || 'Anonymous'}{' '} 
-				{tripcode && <span class="tripcode"> !{tripcode} </span>} 
+				{tripcode && <span className="tripcode"> !{tripcode} </span>} 
 				{created_at}{' '}
 				(ID: <span 
-						class="uid" 
+						className="uid" 
 						style={{backgroundColor}} 
 						title={`${postCount} post${postCount > 1 ? 's' : ''} by this ID`} 
-						onClick={markUsersPosts.bind(this, uid)}>{uid}</span>) 
+						onClick={markUsersPosts.bind(this, uid)}>{uid}</span>){' '}
+				{curLikes && <span>{curLikes} like{curLikes > 1 ? 's' : ''}</span>}{' '}
+				<span onClick={this.like} className={liked ? 'liked' : ''}>[⬆️]</span>
 				<a 
 					id ={address} 
 					className="address" 
@@ -80,8 +87,9 @@ class Post extends Component {
 			{!collapse && <div>
 				{images && 
 					<div className="thumbnail-box">
-						{images.map(image => {
-						return <Image 
+						{images.map((image,i) => {
+						return <Image
+							key={address + 'image' + i} 
 							filename ={image.filename} 
 							address={address} 
 							filesize={image.filesize} 
@@ -91,7 +99,7 @@ class Post extends Component {
 						})}
 					</div>
 				}
-				<div>{text}</div>
+				<div className="text">{text}</div>
 			</div>}
 		</div>
 		return (
@@ -100,6 +108,21 @@ class Post extends Component {
 				{isHovering && <div className="reply" style={{top: y, left: x}}>{post}</div>}
 			</div>
 		)
+	}
+	like(){
+		let api = `/api/threads/:${this.props.thread_id}/posts/${this.props.id}/like`;
+		if (!this.state.liked) {
+			fetch(api, {method: 'POST'})
+			.then(data => {
+				this.setState({liked: true});
+			}).catch(err => console.log(err));
+		}
+		else {
+			fetch(api, {method: 'DELETE'})
+			.then(data => {
+				this.setState({liked: false});
+			})
+		}
 	}
 	colorId(uid){
 		let colors = ['#ff1d58','#f75990', '#fff685', '#00DDFF', '#0049B7', '#8bf0ba', '#0e0fed', '#94f0f1', '#f2b1d8',];

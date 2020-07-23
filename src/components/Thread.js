@@ -17,7 +17,6 @@ class Thread extends Component {
 			current: '',
 			showGallery: false,
 			formLink: ''
-
 		}
 		this.socket = io('http://localhost:8080');
 		this.toggleGallery = this.toggleGallery.bind(this);
@@ -28,8 +27,54 @@ class Thread extends Component {
 		this.thread = this.thread.bind(this);
 		this.markUsersPosts = this.markUsersPosts.bind(this);
 		this.hidePost = this.hidePost.bind(this);
+		this.changeSort = this.changeSort.bind(this);
 	}
-
+	changeSort(sort){
+		let {posts} = this.state;
+		helper(posts);
+		this.setState(posts);
+		function helper(arr) {
+			if (sort == 'byID') {
+				arr.sort(byID);
+			}
+			else if (sort == 'byLikes') {
+				arr.sort(byLikes);
+			}
+			for (let i = 0; i < arr.length; i++) {
+				if (arr[i].children) {
+					helper(arr[i].children)
+				}
+			}
+		}
+		function byID(prev, cur) {
+			if (prev.id < cur.id) {
+				return -1;
+			}
+			else if (prev.id == cur.id) {
+				return 0;
+			}
+			else {
+				return 1;
+			}
+		}
+		function byLikes(prev, cur) {
+			if (!prev.likes) {
+				prev.likes = 0;
+			}
+			if (!cur.likes) {
+				cur.likes = 0;
+			}
+			if (prev.likes > cur.likes) {
+				return -1
+			}
+			else if (prev.likes == cur.likes) {
+				return 0;
+			}
+			else {
+				return 1;
+			}
+		}
+	}
 	componentDidMount() {
 		const {id} = this.props.match.params;
 
@@ -48,6 +93,7 @@ class Thread extends Component {
 			this.socket.emit('subscribe',id)
 			this.socket.on('new post', post => {
 				let {images, posts} = this.state;
+				console.log(post);
 				posts.push(post);
 				if (post.image) {
 					images.push({
@@ -105,7 +151,7 @@ class Thread extends Component {
 			this.countUsersPosts(posts, users);
 			return (
 				<div>
-					<Header toggleGallery={this.toggleGallery} counts={counts}/>
+					<Header toggleGallery={this.toggleGallery} counts={counts} changeSort={this.changeSort}/>
 					<h2>{head.subject}</h2>
 					{head.archived && <span>archived icon</span>}
 					{this.threadPosts(posts, users)}
@@ -328,7 +374,6 @@ class Thread extends Component {
 		}
 	}
 	linkForm(address) {
-		console.log(address)
 		this.setState({formLink: address})
 	}
 }

@@ -190,7 +190,7 @@ app.post('/api/threads/new', upload.array('images', 5), (req, res) => {
 		knex('threads').insert({subject, archived: false}).returning('id').then(thread_ids	=> {
 			knex('posts').insert({thread_id: thread_ids[0], head: true, ...post}).returning('id').then(post_ids => {
 				curAddress++;
-				if (req.files) {
+				if (req.files.length > 0) {
 					let count = 0;
 					let folder = `./dist/images/${thread_ids[0]}`;
 					fs.mkdirsSync(folder);
@@ -255,7 +255,7 @@ app.post('/api/threads/:id/new', upload.array('images', 5), (req, res) => {
 			};
 			knex('posts').insert(post).returning('id').then(post_ids => {
 				curAddress++;
-				if (req.files) {
+				if (req.files.length > 0) {
 					post.images = [];
 					for (let i = 0; i < req.files.length; i++) {
 						let path = `./dist/images/${req.params.id}/(${curAddress})${req.files[i].originalname}`;
@@ -276,17 +276,22 @@ app.post('/api/threads/:id/new', upload.array('images', 5), (req, res) => {
 								post.images.push(image)
 								if (post.images.length == req.files.length) {
 									io.to(req.params.id).emit('new post', post);
+									res.status(201).end();
 								}
 							}); 
 			
 						});
 					}
 
+				} 
+				else {
+					io.to(req.params.id).emit('new post', post);
+					res.status(201).end();
 				}
-				res.status(201).end();
 
 			})
-		}).catch(err => res.status(500).send(err));
+		})
+		// .catch(err => res.status(500).send(err));
 	}
 });
 app.post('/api/threads/:thread_id/posts/:post_id/like', (req, res) => {

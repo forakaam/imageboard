@@ -50,7 +50,7 @@ class Post extends Component {
 	render() {
 		const {images, archived, thread_id, name, collapse, created_at, address, postCount, filesize, dimensions, replies, likes, highlight, hidePost, hide, isHovering, x, y, uid, current, tripcode, markUsersPosts, marked, linkForm, thread} = this.props;
 		const {text, parents, liked} = this.state;
-		let curLikes = likes;
+		let curLikes = likes || 0;
 		if (current) {
 			this.node.current.scrollIntoView();
 		}
